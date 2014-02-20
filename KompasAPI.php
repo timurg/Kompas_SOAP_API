@@ -1,4 +1,10 @@
 <?php
+//В сценари требуется определение следующих констант:
+//define("kompas_wdsl", "");
+//define("kompas_login", "");
+//define("kompas_pass", "");
+
+
 
 class kompasArray implements Iterator{
     private $position = 0;
@@ -87,8 +93,8 @@ class kompasSemesterWork
 	
     public function __construct($anumber, $atype_testing, $ahours, $acontrolwork, $acoursework, $acourseproject)
     {
-        $this->fnumber = $anumber;
-        $this->ftype_testing = $atype_testing;
+                $this->fnumber = $anumber;
+                $this->ftype_testing = $atype_testing;
 		$this->fHours = $ahours;
 		
 		$this->fcontrolwork = $acontrolwork;
@@ -276,10 +282,10 @@ class kompasFactory
     public static function singleton()
     {
         if (!isset(self::$client)) {
-
 			//ini_set('soap.wsdl_cache_enabled', '0');
             ini_set('soap.wsdl_cache_ttl', '10');
-            self::$client = new SoapClient('http://asa.insto.ru:3989/Service1.svc?wsdl');
+            self::$client = new SoapClient(kompas_wdsl,
+                    array('login' => kompas_login, 'password'=> kompas_pass));
         }
         return self::$client;
     }
@@ -287,8 +293,28 @@ class kompasFactory
     
     private static function parse_semester_work($response)
     {
-        $res = new kompasSemesterWork($response->Semester, $response->Attestation,
-			$response->Hours, $response->Controlwork, $response->Coursework, $response->Courseproject);
+        $att = "";
+        $contr = false;
+        $cw = false;
+        $cp = false;
+        if (isset($response->Attestation))
+        {
+            $att = $response->Attestation;
+        }
+        if (isset($response->Controlwork))
+        {
+            $contr = $response->Controlwork;
+        }
+        if (isset($response->Coursework))
+        {
+            $cw = $response->Coursework;
+        }
+        if (isset($response->Courseproject))
+        {
+            $cp = $response->Courseproject;
+        }
+        $res = new kompasSemesterWork($response->Semester, $att,
+			$response->Hours, $contr, $cw, $cp);
         return $res;
     }
     
@@ -330,9 +356,9 @@ class kompasFactory
 	
     private static function parse_cycle($response)
     {
-	$c_id = $response->ID;
+	$c_id = $response->IsOptional;
 	$c_name = $response->Name;
-	$c_shortname = $response->ShortName;
+	$c_shortname = $response->Abbreviation;
         $res = new kompasCycle($c_id, $c_name, $c_shortname);
         
 		//var_dump($response->SubjectGroups);
@@ -387,10 +413,11 @@ class kompasFactory
    
     public static function get_user_curriculum($un)
     {
-		$res = self::singleton()->GetFullStudentInfo(array('Login'=>$un));
+		$res = self::singleton()->GetFullStudentInfo(array('KontrNumber'=>$un));
+                //var_dump($res);
 		$result = new kompasCurriculum("");
-        $result->get_cycles()->add_cycles(self::parse_cycles($res->GetFullStudentInfoResult->Curriculum));
-        return $result;
+                $result->get_cycles()->add_cycles(self::parse_cycles($res->return->Curriculum));
+                return $result;
     }
 }
 
