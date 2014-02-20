@@ -511,9 +511,9 @@ class kompasIndividualSubjects extends kompasArray
 	private $WhenAppro; //дата утверждения либо пустая строка
 	private $Student; //студент
 	
-	public function __construct($fSended, $fWhenAppro, &$fStudent)
+	public function __construct($fSended, $fWhenAppro, kompasStudent &$fStudent)
 	{
-                parent::__construct();
+        parent::__construct();
 		$this->Sended = $fSended;
 		$this->WhenAppro = $fWhenAppro;
 		$this->Student = $fStudent;
@@ -693,12 +693,34 @@ class kompasFactory {
         return $result;
     }
 	
-	public static function &send_subject_on_choice_list($student_id, Iterator &$list) {
-        $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $student_id));
+	protected static function get_ArrayOfStrings(Iterator &$list)
+    {
+        $res = new Array();
+		foreach($list as $value) {
+			$res [] = $value;
+		}
+		return res;
+    }
+	
+	private static function &parse_subject_on_choice($response, kompasStudent &$student)
+	{
+		$result = new kompasIndividualSubjects($response->WhenAppro,
+			$response->Sended, $student);
+		if (is_array($response->Subject)) {
+            foreach ($response->Subject as $value) {
+                $result->add_subject($value);
+            }
+        } else {
+            $result->add_subject($value);
+        }
+		return $result;
+	}
+	
+	public static function &send_subject_on_choice_list(kompasStudent &$student, Iterator &$list) {
+        $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $student->get_agreement_number(),
+			'Subjects'=>get_ArrayOfStrings(&$list)));
         //var_dump($res);
-        $result = new kompasCurriculum("");
-        $result->get_cycles()->add_cycles(self::parse_cycles(
-                $res->return->Curriculum));
+        $result = self::parse_subject_on_choice($res->return);
         return $result;
     }
 }
