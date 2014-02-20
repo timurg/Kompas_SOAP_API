@@ -7,6 +7,13 @@
 
 
 
+//В сценари требуется определение следующих констант:
+//define("kompas_wdsl", "");
+//define("kompas_login", "");
+//define("kompas_pass", "");
+
+
+
 class kompasArray implements Iterator {
 
     private $position = 0;
@@ -120,6 +127,7 @@ class kompasSubject extends kompasArray {
     }
 
     public function __construct($aid, $aname, $acode) {
+        parent::__construct();
         $this->fid = $aid;
         $this->fname = $aname;
         $this->fcode = $acode;
@@ -167,6 +175,7 @@ class kompasSubjectGroup extends kompasArray {
     }
 
     public function __construct($anumber) {
+        parent::__construct();
         $this->fnumber = $anumber;
     }
 
@@ -197,6 +206,7 @@ class kompasCycle extends kompasArray {
     }
 
     public function __construct($aid, $aname, $shortname) {
+        parent::__construct();
         $this->fid = $aid;
         $this->fname = $aname;
         $this->fshortname = $shortname;
@@ -270,7 +280,7 @@ class kompasProgramOfStudy
 	public function __construct($fContrOrganization, $fEduDepartment, $fEduLevel,
 		$fEduForm, $fEduSpecialty, $fEduSpecialtyCode,
 		$fEduSpecialization, $fEduQualification,
-		$fEduBasicEdu, $fEduProgram, $fEduDuration, &$Curriculum)
+		$fEduBasicEdu, $fEduProgram, $fEduDuration, &$fCurriculum)
 	{
 		$this->ContrOrganization = $fContrOrganization;
 		$this->EduDepartment = $fEduDepartment;
@@ -368,7 +378,7 @@ class kompasStudent
 		$this->EduCurSemStartDate = $fEduCurSemStartDate;
 		$this->ContrNumber = $fContrNumber;
 		$this->ContrDate = $fContrDate;
-		$this->Program = fProgram;
+		$this->Program = $fProgram;
 	}
 	
 	public function get_basic_lang()
@@ -418,6 +428,10 @@ class kompasStudents extends kompasArray
 	public function add_student(kompasStudent &$s)
 	{
 		$this->add($s);
+	}
+        public function &get_student($index)
+	{
+		return $this->get_value($index);
 	}
 }
 
@@ -483,7 +497,7 @@ class kompasPersonalData
 	
 	public function &get_curent_student()
 	{
-		return $this->Students->get_value(0);
+		return $this->Students->get_student(0);
 	}
 	public function add_student(kompasStudent &$s)
 	{
@@ -499,9 +513,10 @@ class kompasIndividualSubjects extends kompasArray
 	
 	public function __construct($fSended, $fWhenAppro, &$fStudent)
 	{
-		$this->Sended = fSended;
-		$this->WhenAppro = fWhenAppro;
-		$this->Student = fStudentm;
+                parent::__construct();
+		$this->Sended = $fSended;
+		$this->WhenAppro = $fWhenAppro;
+		$this->Student = $fStudent;
 	}
 	
 	public function add_subject($sub_name)
@@ -664,7 +679,7 @@ class kompasFactory {
 			$res->return->Student->EduDuration,
 			$curr
 		);
-		$stud = kompasStudent(
+		$stud = new kompasStudent(
 			$res->return->Student->EduBasicLang,
 			$res->return->Student->EduGroup,
 			$res->return->Student->EduSemester, 
@@ -679,7 +694,7 @@ class kompasFactory {
     }
 	
 	public static function &send_subject_on_choice_list($student_id, Iterator &$list) {
-        $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $un));
+        $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $student_id));
         //var_dump($res);
         $result = new kompasCurriculum("");
         $result->get_cycles()->add_cycles(self::parse_cycles(
