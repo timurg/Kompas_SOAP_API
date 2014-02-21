@@ -7,31 +7,32 @@
 
 class kompasArray implements Iterator {
 
-    private $position = 0;
+    //private $position = 0;
     private $container;
 
     public function __construct() {
-        $this->position = 0;
+        //$this->position = 0;
+        $container = array();
     }
 
     function rewind() {
-        $this->position = 0;
+        return reset($this->container);
     }
 
     function current() {
-        return $this->container[$this->position];
+        return current($this->container);
     }
 
     function key() {
-        return $this->position;
+        return key($this->container);
     }
 
     function next() {
-        ++$this->position;
+        return next($this->container);
     }
 
     function valid() {
-        return isset($this->container[$this->position]);
+        return key($this->container) !== null;
     }
 
     protected function add(&$sw) {
@@ -51,9 +52,7 @@ class kompasArray implements Iterator {
         $this->position = 0;
     }
     protected function remove($inx) {
-        echo "Удаляю ".$inx." * ".$this->get_count()."<br/>";
         unset( $this->container[$inx] );
-        echo "осталось  * ".$this->get_count()."<br/>";
     }
 
 }
@@ -210,6 +209,13 @@ class kompasSubjectGroup extends kompasArray {
     {
         $this->remove($index);
     }
+    
+    /**
+    * Возвращает дисципину группы
+    *
+    * @author Timur
+    * @return kompasSubject
+    */
     public function &get_subject($inx) {
         return $this->get_value($inx);
     }
@@ -242,7 +248,13 @@ class kompasCycle extends kompasArray {
         $this->fshortname = $shortname;
         //$this->fsubs = //$subs;
     }
-
+    
+    /**
+    * Возвращает перечень групп дисциплин
+    *
+    * @author Timur
+    * @return kompasSubjectGroup
+    */
     public function &get_subjects_groups() {
         return $this->fsubs;
     }
@@ -264,7 +276,13 @@ class kompasCycles extends kompasArray {
             $this->add($cycle);
         }
     }
-
+    
+    /**
+    * Возвращает циклов дисциплин
+    *
+    * @author Timur
+    * @return kompasCycle
+    */
     public function &get_cycle($inx) {
         return $this->get_value($inx);
     }
@@ -280,7 +298,13 @@ class kompasCurriculum {
         $this->fcycles = new kompasCycles();
         $this->fmetainfo = $aMetaInfo;
     }
-
+    
+    /**
+    * Возвращает перечень циклов дисциплин РУП
+    *
+    * @author Timur
+    * @return kompasCycles
+    */
     public function &get_cycles() {
         return $this->fcycles;
     }
@@ -364,7 +388,13 @@ class kompasProgramOfStudy {
     public function get_duration_education() {
         return $this->EduProgram;
     }
-
+    
+    /**
+    * Возвращает учебный план направления подготовки
+    *
+    * @author Timur
+    * @return kompasCurriculum
+    */
     public function &get_curriculum() {
         return $this->Curriculum;
     }
@@ -394,6 +424,10 @@ class kompasStudent {
         $this->Program = $fProgram;
         $this->IndividualSubjects = $fIndividualSubjects;
         $fIndividualSubjects->set_student($this);
+        if ($fIndividualSubjects->is_appro())
+        {
+            $this->apply_individual_subjects();
+        }
     }
 
     public function get_basic_lang() {
@@ -423,30 +457,51 @@ class kompasStudent {
     public function get_agreement_date() {
         return $this->ContrDate;
     }
-
+    
+    /**
+    * Возвращает информацию о направлении подготовки студента
+    *
+    * @author Timur
+    * @return kompasProgramOfStudy
+    */
     public function &get_curent_program() {
         return $this->Program;
     }
     
+    /**
+    * Возвращает информацию об индивидуальном плане студента
+    *
+    * @author Timur
+    * @return kompasIndividualSubjects
+    */
     public function &get_individual_subjects() {
         return $this->IndividualSubjects;
     }
-    
+
     public function apply_individual_subjects() {
         $curricula = $this->get_curent_program()->get_curriculum();
         $cycles = $curricula->get_cycles();
         foreach ($cycles as $cycle) {
             foreach ($cycle as $subject_group) {
                 if ($subject_group->get_number() <> "0") {
-                    for ($i = $subject_group->get_count()-1; $i >=0; $i--) {
-                        if (!$this->get_individual_subjects()->is_subject_present($subject_group->get_subject($i)->get_name()))
-                        {
-                            $subject_group->remove_subject($i);
+                    foreach ($subject_group as $key => $value) {
+                        if (!$this->get_individual_subjects()->is_subject_present($subject_group->get_subject($key)->get_name())) {
+                            $subject_group->remove_subject($key);
                         }
                     }
                 }
             }
         }
+    }
+    
+    public function has_individual_plan()
+    {
+        return $this->get_individual_subjects()->is_appro();
+    }
+    
+    public function sended_request_individual_plan()
+    {
+        return $this->get_individual_subjects()->is_sended();
     }
 
     //private $PersonalData; //ссылка на kompasPersonalData
@@ -457,7 +512,13 @@ class kompasStudents extends kompasArray {
     public function add_student(kompasStudent &$s) {
         $this->add($s);
     }
-
+    
+    /**
+    * Возвращает запись о студенте
+    *
+    * @author Timur
+    * @return kompasStudent
+    */
     public function &get_student($index) {
         return $this->get_value($index);
     }
@@ -513,8 +574,19 @@ class kompasPersonalData {
     public function get_birthday() {
         return $this->PersonBirthDay;
     }
-
-    public function &get_curent_student() {
+    
+    public function get_full_name()
+    {
+        return  $this->get_last_name()." ".$this->get_first_name()." ".$this->get_patronymic();
+    }
+    
+    /**
+    * Возвращает запись о студенте
+    *
+    * @author Timur
+    * @return kompasStudent
+    */
+    public function &student() {
         return $this->Students->get_student(0);
     }
 
@@ -533,9 +605,28 @@ class kompasIndividualSubjects extends kompasArray {
     public function __construct($fSended, $fWhenAppro ) {
         parent::__construct();
         $this->Sended = $fSended;
+        if ($fWhenAppro <>"")
+        {
+            
+        }
         $this->WhenAppro = $fWhenAppro;
         $this->Student = null;
     }
+    
+    public function is_sended()
+    {
+        return $this->Sended;
+    }
+    
+    public function when()
+    {
+        return $this->WhenAppro;
+    }
+    
+    public function is_appro()
+    {
+        return $this->WhenAppro <>"";
+    } 
 
     public function add_subject($sub_name) {
         $this->add($sub_name);
@@ -553,7 +644,7 @@ class kompasIndividualSubjects extends kompasArray {
     }
 
     public function apply() {
-        
+        kompasFactory::send_subject_on_choice_list($this->Student, $this);
     }
     public function is_subject_present($sn){
         foreach ($this as $sub_name) {
