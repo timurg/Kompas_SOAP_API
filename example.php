@@ -2,16 +2,33 @@
 define("kompas_wdsl", "");
 define("kompas_login", "");
 define("kompas_pass", "");
+
 include("KompasAPI.php");
 
-function GetGroupByName($gr_nm) {
-    return null;
+
+function out_semester_work($JoinRow, $col_count_cur, $code, $subject_name, $hours, $semester_number, $type_testing) {
+    if ($JoinRow) {
+        if ($col_count_cur > 1) {
+            echo "<tr>";
+        }
+        echo "<td>" . $semester_number . "</td><td>" .
+        $type_testing . "</td>";
+    } else {
+        echo "<tr>";
+        echo "<td>" . $code . "</td><td>" .
+        $subject_name . "</td><td>" .
+        $hours . "</td><td>" .
+        $semester_number . "</td><td>" .
+        $type_testing . "</td>";
+    }
+    echo "</tr>";
 }
 
-function PrintSemester($cyc, $sem) {
+function PrintSemester(&$cyc, $sem) {
     global $PrintedSubject;
     foreach ($cyc as $cycle) {
         foreach ($cycle as $subject_group) {
+            echo is_array($subject_group);
             foreach ($subject_group as $subject) {
                 if ((!in_array($subject->get_name(), $PrintedSubject)) && 
                         ($subject->work_count_in_semester($sem) > 0)) {
@@ -20,52 +37,39 @@ function PrintSemester($cyc, $sem) {
                     if ($sub_code == "empty") {
                         $sub_code = "";
                     };
-                    //$coll_count = $subject->work_count_in_semester($sem);
-                    $coll_count = $subject->get_count();
+                    $coll_count = $subject->attestation_count();
+                    $hours = $subject->get_subject_hours();
                     $JoinRow = ($coll_count > 1);
                     if ($JoinRow) {
                         echo "<tr><td rowspan=" . $coll_count . ">" . $sub_code . 
                                 "</td><td rowspan=" . $coll_count . ">" . 
                                 $subject->get_name() . "</td><td  rowspan=" . 
-                                $coll_count . ">" . $subject->get_subject_hours() .
-                                "</td>"; //<td rowspan=".$coll_count.">".$sem."</td>";
+                                $coll_count . ">" . $hours .
+                                "</td>";
                     }
                     $col_count_cur = 0;
+                    
                     foreach ($subject as $sw) {
-                        //if ($sw->get_number()==$sem)
                         {
-                            $col_count_cur = $col_count_cur + 1;
-                            $tmp_gr = GetGroupByName("ПГ " . $subject->get_name());
-                            if (0) {
-                                $tmp_gr = GetGroupByName("ПГ Европейский суд и права человека");
+                            if ($sw->get_type_testing()<>""){
+                                $col_count_cur ++;
+                                out_semester_work($JoinRow, $col_count_cur, $sub_code, $subject->get_name(), $hours, $sw->get_number(), $sw->get_type_testing());
+                            }
+                            if ($sw->control_work()) {
+                                $col_count_cur ++;
+                                out_semester_work($JoinRow, $col_count_cur, $sub_code, $subject->get_name(), $hours, $sw->get_number(), "Контрольная работа");
                             }
 
-
-                            if ($JoinRow) {
-                                if ($col_count_cur > 1) {
-                                    echo "<tr>";
-                                }
-                                echo "<td>" . $sw->get_number() . "</td><td>" . 
-                                        $sw->get_type_testing() . "</td>";
-                            } else {
-                                echo "<tr>";
-                                if ($tmp_gr == null) {
-                                    echo "<td>" . $sub_code . "</td><td>" . 
-                                            $subject->get_name() . "</td><td>" .
-                                            $sw->get_hours() . "</td><td>" . 
-                                            $sw->get_number() . "</td><td>" . 
-                                            $sw->get_type_testing() . "</td>";
-                                } else {
-                                    echo "<td><a href='/extranet/workgroups/group/" . 
-                                            $tmp_gr["ID"] . "/'>" .
-                                            $subject->get_name() . 
-                                            "</a></td><td>" . $sw->get_number() .
-                                            "</td><td>" . $sw->get_hours() . 
-                                            "</td><td>" . $sw->get_type_testing() . 
-                                            "</td>";
-                                }
+                            if ($sw->course_work()) {
+                                $col_count_cur ++;
+                                out_semester_work($JoinRow, $col_count_cur, $sub_code, $subject->get_name(), $hours, $sw->get_number(), "Курсовая работа");
                             }
-                            echo "</tr>";
+
+                            if ($sw->course_project()) {
+                                $col_count_cur ++;
+                                out_semester_work($JoinRow, $col_count_cur, $sub_code, $subject->get_name(), $hours, $sw->get_number(), "Курсовой проект");
+                            }
+
                         }
                     }
                 }
@@ -73,9 +77,29 @@ function PrintSemester($cyc, $sem) {
         }
     }
 }
+$person = kompasFactory::get_student("012013121620244981");
 
-$curricula = kompasFactory::get_user_curriculum("012014012014043863");
+echo "<p>".$person->get_full_name()."</p>";
+
+if (!$person->student()->sended_request_individual_plan())
+{
+    $person->student()->get_individual_subjects()->add_subject("Психология");
+    $person->student()->get_individual_subjects()->add_subject("Логика");
+    $person->student()->get_individual_subjects()->add_subject("Региональная экономика");
+    $person->student()->get_individual_subjects()->add_subject("Контроль и ревизия");
+    $person->student()->get_individual_subjects()->add_subject("Маркетинговый анализ");
+    $person->student()->get_individual_subjects()->add_subject("Информационные технологии в управлении");
+    $person->student()->get_individual_subjects()->add_subject("Бюджетирование");
+    $person->student()->get_individual_subjects()->add_subject("Анализ финансовой отчетности");
+    $person->student()->get_individual_subjects()->add_subject("Основы документационного обеспечения управления");
+    $person->student()->get_individual_subjects()->add_subject("Финансы организации");
+    $person->student()->get_individual_subjects()->apply();
+    echo "<p>Отправлен запрос на выбор дисциплин</p>";
+}
+
+$curricula = $person->student()->get_curent_program()->get_curriculum();
 $cycles = $curricula->get_cycles();
+//var_dump($cycles);
 $PrintedSubject = array();
 ?>
 <html>
