@@ -1,9 +1,13 @@
 <?php
 
-//В сценари требуется определение следующих констант:
-//define("kompas_wdsl", "");
-//define("kompas_login", "");
-//define("kompas_pass", "");
+//
+//$SETTINGS = array(
+//"end_point"=>"",
+//"pass" => "",
+//"login"=> "",
+//);
+//
+require_once 'config.php';
 
 class kompasArray implements Iterator {
 
@@ -499,7 +503,7 @@ class kompasStudent {
         return $this->get_individual_subjects()->is_appro();
     }
     
-    public function sended_request_individual_plan()
+    public function has_sended_request_individual_plan()
     {
         return $this->get_individual_subjects()->is_sended();
     }
@@ -665,7 +669,9 @@ class kompasFactory {
         if (!isset(self::$client)) {
             //ini_set('soap.wsdl_cache_enabled', '0');
             ini_set('soap.wsdl_cache_ttl', '10');
-            self::$client = new SoapClient(kompas_wdsl, array('login' => kompas_login, 'password' => kompas_pass, 'trace' => 1));
+            global $SETTINGS;
+            self::$client = new SoapClient($SETTINGS["end_point"], 
+                    array('login' => $SETTINGS["login"], 'password' => $SETTINGS["pass"]));
         }
         return self::$client;
     }

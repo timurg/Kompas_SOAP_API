@@ -1,7 +1,4 @@
 ﻿﻿<?php
-define("kompas_wdsl", "");
-define("kompas_login", "");
-define("kompas_pass", "");
 
 include("KompasAPI.php");
 
@@ -81,7 +78,7 @@ $person = kompasFactory::get_student("012013121620244981");
 
 echo "<p>".$person->get_full_name()."</p>";
 
-if (!$person->student()->sended_request_individual_plan())
+if (!$person->student()->has_sended_request_individual_plan())
 {
     $person->student()->get_individual_subjects()->add_subject("Психология");
     $person->student()->get_individual_subjects()->add_subject("Логика");
