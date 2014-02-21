@@ -5,15 +5,6 @@
 //define("kompas_login", "");
 //define("kompas_pass", "");
 
-
-
-//В сценари требуется определение следующих констант:
-//define("kompas_wdsl", "");
-//define("kompas_login", "");
-//define("kompas_pass", "");
-
-
-
 class kompasArray implements Iterator {
 
     private $position = 0;
@@ -54,12 +45,17 @@ class kompasArray implements Iterator {
     protected function &get_value($inx) {
         return $this->container[$inx];
     }
-	
-	protected function remove_all()
-	{
-		array_splice($this->container, 0);
-		$this->position = 0;
-	}
+
+    protected function remove_all() {
+        array_splice($this->container, 0);
+        $this->position = 0;
+    }
+    protected function remove($inx) {
+        echo "Удаляю ".$inx." * ".$this->get_count()."<br/>";
+        unset( $this->container[$inx] );
+        echo "осталось  * ".$this->get_count()."<br/>";
+    }
+
 }
 
 class kompasSemesterWork {
@@ -95,8 +91,7 @@ class kompasSemesterWork {
         return $this->fcourseproject;
     }
 
-    public function __construct($anumber, $atype_testing, $ahours, $acontrolwork,
-            $acoursework, $acourseproject) {
+    public function __construct($anumber, $atype_testing, $ahours, $acontrolwork, $acoursework, $acourseproject) {
         $this->fnumber = $anumber;
         $this->ftype_testing = $atype_testing;
         $this->fHours = $ahours;
@@ -105,7 +100,23 @@ class kompasSemesterWork {
         $this->fcoursework = $acoursework;
         $this->fcourseproject = $acourseproject;
     }
-
+    public function attestation_count()
+    {
+        $num = 0;
+        if ($this->get_type_testing() <>"") {
+            $num++;
+        }
+        if ($this->control_work())  {
+            $num++;
+        }
+        if ($this->course_work()) {
+            $num++;
+        }
+        if ($this->course_project()) {
+            $num++;
+        }
+        return $num;
+    }
 }
 
 class kompasSubject extends kompasArray {
@@ -141,12 +152,21 @@ class kompasSubject extends kompasArray {
         $pres = 0;
         foreach ($this as $sw) {
             if ($sw->get_number() == $sem) {
-                $pres = $pres + 1;
+                $pres += $sw->attestation_count();
             }
         }
         return $pres;
     }
-
+    
+    public function attestation_count()
+    {
+        $num = 0;
+        foreach ($this as $sw) {
+            $num += $sw->attestation_count();
+        }
+        return $num;
+    }
+    
     public function semester_present($sem) {
         $pres = false;
         foreach ($this as $sw) {
@@ -158,10 +178,13 @@ class kompasSubject extends kompasArray {
     }
 
     public function get_subject_hours() {
+        $res = 0;
         if ($this->get_count() > 0) {
-            return $this->get_value(0)->get_hours();
+            foreach ($this as $sw) {
+                $res+=$sw->get_hours();
+            }
         }
-        return 0;
+        return $res;
     }
 
 }
@@ -182,7 +205,14 @@ class kompasSubjectGroup extends kompasArray {
     public function add_subject(kompasSubject $s) {
         $this->add($s);
     }
-
+    
+    public function remove_subject($index)
+    {
+        $this->remove($index);
+    }
+    public function &get_subject($inx) {
+        return $this->get_value($inx);
+    }
 }
 
 class kompasCycle extends kompasArray {
@@ -261,280 +291,279 @@ class kompasCurriculum {
 
 }
 
-class kompasProgramOfStudy
-{
-	private $ContrOrganization; //Организация
-	private $EduDepartment; //Подразделение
-	private $EduLevel; 	//Уровень подготовки
-	private $EduForm; //Форма обучения
-	private $EduSpecialty; //Специальность / направление подготовки
-	private $EduSpecialtyCode; 	//Код специальности
-	private $EduSpecialization;  //Специализация / профиль
-	private $EduQualification; //Квалификация
-	private $EduBasicEdu; //Базовое образование
-	private $EduProgram; //Программа подготовки
-	private $EduDuration; //Срок обучения
-	
-	private $Curriculum; //учебный план
-	
-	public function __construct($fContrOrganization, $fEduDepartment, $fEduLevel,
-		$fEduForm, $fEduSpecialty, $fEduSpecialtyCode,
-		$fEduSpecialization, $fEduQualification,
-		$fEduBasicEdu, $fEduProgram, $fEduDuration, &$fCurriculum)
-	{
-		$this->ContrOrganization = $fContrOrganization;
-		$this->EduDepartment = $fEduDepartment;
-		$this->EduLevel = $fEduLevel;
-		$this->EduForm = $fEduForm;
-		$this->EduSpecialty = $fEduSpecialty;
-		$this->EduSpecialtyCode = $fEduSpecialtyCode;
-		$this->EduSpecialization = $fEduSpecialization;
-		$this->EduQualification = $fEduQualification;
-		$this->EduBasicEdu = $fEduBasicEdu;
-		$this->EduProgram = $fEduProgram;
-		$this->EduDuration = $fEduDuration;
-		$this->Curriculum = $fCurriculum;
-	}
-	
-	public function get_organization_name()
-	{
-		return $this->ContrOrganization;
-	}
-	
-	public function get_subdivision_name()
-	{
-		return $this->EduDepartment;
-	}
-	
-	public function get_education_level()
-	{
-		return $this->EduLevel;
-	}
-	
-	public function get_form_education()
-	{
-		return $this->EduForm;
-	}
-	
-	public function get_direction()
-	{
-		return $this->EduSpecialty;
-	}
-	
-	public function get_direction_code()
-	{
-		return $this->EduSpecialtyCode;
-	}
-	
-	public function get_specialization()
-	{
-		return $this->EduSpecialization;
-	}
-	
-	public function get_qualification()
-	{
-		return $this->EduQualification;
-	}
-	
-	public function get_basic_education()
-	{
-		return $this->EduBasicEdu;
-	}
-	
-	public function get_program_name()
-	{
-		return $this->EduProgram;
-	}
-	
-	public function get_duration_education()
-	{
-		return $this->EduProgram;
-	}
-	public function &get_curriculum()
-	{
-		return $this->Curriculum;
-	}
+class kompasProgramOfStudy {
+
+    private $ContrOrganization; //Организация
+    private $EduDepartment; //Подразделение
+    private $EduLevel;  //Уровень подготовки
+    private $EduForm; //Форма обучения
+    private $EduSpecialty; //Специальность / направление подготовки
+    private $EduSpecialtyCode;  //Код специальности
+    private $EduSpecialization;  //Специализация / профиль
+    private $EduQualification; //Квалификация
+    private $EduBasicEdu; //Базовое образование
+    private $EduProgram; //Программа подготовки
+    private $EduDuration; //Срок обучения
+    private $Curriculum; //учебный план
+
+    public function __construct($fContrOrganization, $fEduDepartment, $fEduLevel, $fEduForm, $fEduSpecialty, $fEduSpecialtyCode, $fEduSpecialization, $fEduQualification, $fEduBasicEdu, $fEduProgram, $fEduDuration, &$fCurriculum) {
+        $this->ContrOrganization = $fContrOrganization;
+        $this->EduDepartment = $fEduDepartment;
+        $this->EduLevel = $fEduLevel;
+        $this->EduForm = $fEduForm;
+        $this->EduSpecialty = $fEduSpecialty;
+        $this->EduSpecialtyCode = $fEduSpecialtyCode;
+        $this->EduSpecialization = $fEduSpecialization;
+        $this->EduQualification = $fEduQualification;
+        $this->EduBasicEdu = $fEduBasicEdu;
+        $this->EduProgram = $fEduProgram;
+        $this->EduDuration = $fEduDuration;
+        $this->Curriculum = $fCurriculum;
+    }
+
+    public function get_organization_name() {
+        return $this->ContrOrganization;
+    }
+
+    public function get_subdivision_name() {
+        return $this->EduDepartment;
+    }
+
+    public function get_education_level() {
+        return $this->EduLevel;
+    }
+
+    public function get_form_education() {
+        return $this->EduForm;
+    }
+
+    public function get_direction() {
+        return $this->EduSpecialty;
+    }
+
+    public function get_direction_code() {
+        return $this->EduSpecialtyCode;
+    }
+
+    public function get_specialization() {
+        return $this->EduSpecialization;
+    }
+
+    public function get_qualification() {
+        return $this->EduQualification;
+    }
+
+    public function get_basic_education() {
+        return $this->EduBasicEdu;
+    }
+
+    public function get_program_name() {
+        return $this->EduProgram;
+    }
+
+    public function get_duration_education() {
+        return $this->EduProgram;
+    }
+
+    public function &get_curriculum() {
+        return $this->Curriculum;
+    }
+
 }
 
-class kompasStudent
-{
-	private $EduBasicLang; //Основной изучаемый язык
-	private $EduGroup; //Группа
-	private $EduSemester; //Семестр
-	private $EduStatus; //Статус студента
-	private $EduCurSemStartDate; //Дата начала обучения по текущему семестру
-	private $ContrNumber; //Номер договора / номер зачётной книжки
-	private $ContrDate; //Дата заключения договора
-	private $Program; //kompasProgramOfStudy
-	
-	public function __construct($fEduBasicLang, $fEduGroup, $fEduSemester, 
-		$fEduStatus, $fEduCurSemStartDate, $fContrNumber, 
-		$fContrDate, &$fProgram)
-	{
-		$this->EduBasicLang = $fEduBasicLang;
-		$this->EduGroup = $fEduGroup;
-		$this->EduSemester = $fEduSemester;
-		$this->EduStatus = $fEduStatus;
-		$this->EduCurSemStartDate = $fEduCurSemStartDate;
-		$this->ContrNumber = $fContrNumber;
-		$this->ContrDate = $fContrDate;
-		$this->Program = $fProgram;
-	}
-	
-	public function get_basic_lang()
-	{
-		return $this->EduBasicLang;
-	}
-	
-	public function get_education_group()
-	{
-		return $this->EduGroup;
-	}
-	
-	public function get_current_semester()
-	{
-		return $this->EduSemester;
-	}
-	
-	public function get_status()
-	{
-		return $this->EduStatus;
-	}
-	
-	public function get_current_semester_start_date()
-	{
-		return $this->EduCurSemStartDate;
-	}
-	
-	public function get_agreement_number()
-	{
-		return $this->ContrNumber;
-	}
-	
-	public function get_agreement_date()
-	{
-		return $this->ContrDate;
-	}
-	
-	public function &get_curent_program()
-	{
-		return $this->Program;
-	}
-	//private $PersonalData; //ссылка на kompasPersonalData
+class kompasStudent {
+
+    private $EduBasicLang; //Основной изучаемый язык
+    private $EduGroup; //Группа
+    private $EduSemester; //Семестр
+    private $EduStatus; //Статус студента
+    private $EduCurSemStartDate; //Дата начала обучения по текущему семестру
+    private $ContrNumber; //Номер договора / номер зачётной книжки
+    private $ContrDate; //Дата заключения договора
+    private $Program; //kompasProgramOfStudy
+    private $IndividualSubjects; //kompasIndividualSubjects
+
+    public function __construct($fEduBasicLang, $fEduGroup, $fEduSemester, $fEduStatus, $fEduCurSemStartDate, $fContrNumber, $fContrDate, &$fProgram, kompasIndividualSubjects &$fIndividualSubjects) {
+        $this->EduBasicLang = $fEduBasicLang;
+        $this->EduGroup = $fEduGroup;
+        $this->EduSemester = $fEduSemester;
+        $this->EduStatus = $fEduStatus;
+        $this->EduCurSemStartDate = $fEduCurSemStartDate;
+        $this->ContrNumber = $fContrNumber;
+        $this->ContrDate = $fContrDate;
+        $this->Program = $fProgram;
+        $this->IndividualSubjects = $fIndividualSubjects;
+        $fIndividualSubjects->set_student($this);
+    }
+
+    public function get_basic_lang() {
+        return $this->EduBasicLang;
+    }
+
+    public function get_education_group() {
+        return $this->EduGroup;
+    }
+
+    public function get_current_semester() {
+        return $this->EduSemester;
+    }
+
+    public function get_status() {
+        return $this->EduStatus;
+    }
+
+    public function get_current_semester_start_date() {
+        return $this->EduCurSemStartDate;
+    }
+
+    public function get_agreement_number() {
+        return $this->ContrNumber;
+    }
+
+    public function get_agreement_date() {
+        return $this->ContrDate;
+    }
+
+    public function &get_curent_program() {
+        return $this->Program;
+    }
+    
+    public function &get_individual_subjects() {
+        return $this->IndividualSubjects;
+    }
+    
+    public function apply_individual_subjects() {
+        $curricula = $this->get_curent_program()->get_curriculum();
+        $cycles = $curricula->get_cycles();
+        foreach ($cycles as $cycle) {
+            foreach ($cycle as $subject_group) {
+                if ($subject_group->get_number() <> "0") {
+                    for ($i = $subject_group->get_count()-1; $i >=0; $i--) {
+                        if (!$this->get_individual_subjects()->is_subject_present($subject_group->get_subject($i)->get_name()))
+                        {
+                            $subject_group->remove_subject($i);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //private $PersonalData; //ссылка на kompasPersonalData
 }
 
-class kompasStudents extends kompasArray
-{
-	public function add_student(kompasStudent &$s)
-	{
-		$this->add($s);
-	}
-        public function &get_student($index)
-	{
-		return $this->get_value($index);
-	}
+class kompasStudents extends kompasArray {
+
+    public function add_student(kompasStudent &$s) {
+        $this->add($s);
+    }
+
+    public function &get_student($index) {
+        return $this->get_value($index);
+    }
+
 }
 
-class kompasPersonalData
-{
-	private $PersonFirstName; //Имя
-	private $PersonLastName;   //Фамилия
-	private $PersonPatronymic; 	//Отчество
-	private $PersonCode; 	//КодФизЛица
-	private $PersonEmail; 	//Email
-	private $PersonGender; 	//Пол
-	private $PersonBirthDay; //Дата рождения
-	private $Students; //тип kompasStudents. На случай если будут передаваться все договора физ лица
-	
-	public function __construct( $fPersonFirstName, $fPersonLastName, 
-		$fPersonPatronymic, $fPersonCode, $fPersonEmail,
-		$fPersonGender, $fPersonBirthDay)
-	{
-		$this->PersonFirstName = $fPersonFirstName;
-		$this->PersonLastName = $fPersonLastName;
-		$this->PersonPatronymic = $fPersonPatronymic;
-		$this->PersonCode = $fPersonCode;
-		$this->PersonEmail = $fPersonEmail;
-		$this->PersonGender = $fPersonGender;
-		$this->PersonBirthDay = $fPersonBirthDay;
-		$this->Students = new kompasStudents();
-	}
-	
-	public function get_first_name()
-	{
-		return $this->PersonFirstName;
-	}
-	
-	public function get_last_name()
-	{
-		return $this->PersonLastName;
-	}
-	
-	public function get_patronymic()
-	{
-		return $this->PersonPatronymic;
-	}
-	
-	public function get_id()
-	{
-		return $this->PersonCode;
-	}
-	
-	public function get_email()
-	{
-		return $this->PersonEmail;
-	}
-	
-	public function get_gender()
-	{
-		return $this->PersonGender;
-	}
-	
-	public function get_birthday()
-	{
-		return $this->PersonBirthDay;
-	}
-	
-	public function &get_curent_student()
-	{
-		return $this->Students->get_student(0);
-	}
-	public function add_student(kompasStudent &$s)
-	{
-		$this->Students->add_student($s);
-	}
+class kompasPersonalData {
+
+    private $PersonFirstName; //Имя
+    private $PersonLastName;   //Фамилия
+    private $PersonPatronymic;  //Отчество
+    private $PersonCode;  //КодФизЛица
+    private $PersonEmail;  //Email
+    private $PersonGender;  //Пол
+    private $PersonBirthDay; //Дата рождения
+    private $Students; //тип kompasStudents. На случай если будут передаваться все договора физ лица
+
+    public function __construct($fPersonFirstName, $fPersonLastName, $fPersonPatronymic, $fPersonCode, $fPersonEmail, $fPersonGender, $fPersonBirthDay) {
+        $this->PersonFirstName = $fPersonFirstName;
+        $this->PersonLastName = $fPersonLastName;
+        $this->PersonPatronymic = $fPersonPatronymic;
+        $this->PersonCode = $fPersonCode;
+        $this->PersonEmail = $fPersonEmail;
+        $this->PersonGender = $fPersonGender;
+        $this->PersonBirthDay = $fPersonBirthDay;
+        $this->Students = new kompasStudents();
+    }
+
+    public function get_first_name() {
+        return $this->PersonFirstName;
+    }
+
+    public function get_last_name() {
+        return $this->PersonLastName;
+    }
+
+    public function get_patronymic() {
+        return $this->PersonPatronymic;
+    }
+
+    public function get_id() {
+        return $this->PersonCode;
+    }
+
+    public function get_email() {
+        return $this->PersonEmail;
+    }
+
+    public function get_gender() {
+        return $this->PersonGender;
+    }
+
+    public function get_birthday() {
+        return $this->PersonBirthDay;
+    }
+
+    public function &get_curent_student() {
+        return $this->Students->get_student(0);
+    }
+
+    public function add_student(kompasStudent &$s) {
+        $this->Students->add_student($s);
+    }
+
 }
 
-class kompasIndividualSubjects extends kompasArray 
-{
-	private $Sended; //была ли отправлена заявка
-	private $WhenAppro; //дата утверждения либо пустая строка
-	private $Student; //студент
-	
-	public function __construct($fSended, $fWhenAppro, kompasStudent &$fStudent)
-	{
+class kompasIndividualSubjects extends kompasArray {
+
+    private $Sended; //была ли отправлена заявка
+    private $WhenAppro; //дата утверждения либо пустая строка
+    private $Student; //студент
+
+    public function __construct($fSended, $fWhenAppro ) {
         parent::__construct();
-		$this->Sended = $fSended;
-		$this->WhenAppro = $fWhenAppro;
-		$this->Student = $fStudent;
-	}
-	
-	public function add_subject($sub_name)
-	{
-		$this->add($sub_name);
-	}
-	
-	public function reset_subject_list()
-	{
-		$this->remove_all();
-		$this->Sended = false;
-		$this->WhenAppro = "";
-	}
-	
-	public function apply()
-	{
-		
-	}
+        $this->Sended = $fSended;
+        $this->WhenAppro = $fWhenAppro;
+        $this->Student = null;
+    }
+
+    public function add_subject($sub_name) {
+        $this->add($sub_name);
+    }
+
+    public function reset_subject_list() {
+        $this->remove_all();
+        $this->Sended = false;
+        $this->WhenAppro = "";
+    }
+    
+    public function set_student(kompasStudent &$fStudent)
+    {
+        $this->Student = $fStudent;
+    }
+
+    public function apply() {
+        
+    }
+    public function is_subject_present($sn){
+        foreach ($this as $sub_name) {
+            if ($sub_name == $sn){
+                echo $sub_name." = ".$sn."<br/>";
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 class kompasFactory {
@@ -545,8 +574,7 @@ class kompasFactory {
         if (!isset(self::$client)) {
             //ini_set('soap.wsdl_cache_enabled', '0');
             ini_set('soap.wsdl_cache_ttl', '10');
-            self::$client = new SoapClient(kompas_wdsl, 
-                    array('login' => kompas_login, 'password' => kompas_pass));
+            self::$client = new SoapClient(kompas_wdsl, array('login' => kompas_login, 'password' => kompas_pass, 'trace' => 1));
         }
         return self::$client;
     }
@@ -568,8 +596,7 @@ class kompasFactory {
         if (isset($response->Courseproject)) {
             $cp = $response->Courseproject;
         }
-        $res = new kompasSemesterWork($response->Semester, $att, 
-                $response->Hours, $contr, $cw, $cp);
+        $res = new kompasSemesterWork($response->Semester, $att, $response->Hours, $contr, $cw, $cp);
         return $res;
     }
 
@@ -632,97 +659,80 @@ class kompasFactory {
 
     protected static function &parse_meta_info($buff) {
 
-        $res = new asaMetaInfo($buff->OrganizationName, $buff->SubdivisionName, 
-                $buff->DirectionName, $buff->SpecializationName, 
-                $buff->DurationEducation, $buff->QualificationEducation, 
-                $buff->FormEducation, $buff->BaseEducationRate, $buff->Member);
+        $res = new asaMetaInfo($buff->OrganizationName, $buff->SubdivisionName, $buff->DirectionName, $buff->SpecializationName, $buff->DurationEducation, $buff->QualificationEducation, $buff->FormEducation, $buff->BaseEducationRate, $buff->Member);
         return $res;
     }
-	
 
     public static function &get_user_curriculum($un) {
         $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $un));
         //var_dump($res);
         $result = new kompasCurriculum("");
         $result->get_cycles()->add_cycles(self::parse_cycles(
-                $res->return->Curriculum));
+                        $res->return->Curriculum));
         return $result;
     }
-	
-	public static function &get_student($student_id) {
+
+    public static function &get_student($student_id) {
         $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $student_id));
         //var_dump($res);
-		$result = new kompasPersonalData(
-			$res->return->Student->PersonFirstName,
-			$res->return->Student->PersonLastName, 
-			$res->return->Student->PersonPatronymic,
-			$res->return->Student->PersonCode,
-			$res->return->Student->PersonEmail,
-			$res->return->Student->PersonGender,
-			$res->return->Student->PersonBirthDay
-		);
-		
-		$curr = new kompasCurriculum("");
-		$curr->get_cycles()->add_cycles(self::parse_cycles(
-                $res->return->Curriculum));
-		$program = new kompasProgramOfStudy(
-			$res->return->Student->ContrOrganization,
-			$res->return->Student->EduDepartment,
-			$res->return->Student->EduLevel,
-			$res->return->Student->EduForm,
-			$res->return->Student->EduSpecialty,
-			$res->return->Student->EduSpecialtyCode,
-			$res->return->Student->EduSpecialization,
-			$res->return->Student->EduQualification,
-			$res->return->Student->EduBasicEdu,
-			$res->return->Student->EduProgram,
-			$res->return->Student->EduDuration,
-			$curr
-		);
-		$stud = new kompasStudent(
-			$res->return->Student->EduBasicLang,
-			$res->return->Student->EduGroup,
-			$res->return->Student->EduSemester, 
-			$res->return->Student->EduStatus,
-			$res->return->Student->EduCurSemStartDate,
-			$res->return->Student->ContrNumber,
-			$res->return->Student->ContrDate,
-			$program
-		);
-		$result->add_student($stud);
+        $result = new kompasPersonalData(
+                $res->return->Student->PersonFirstName, $res->return->Student->PersonLastName, $res->return->Student->PersonPatronymic, $res->return->Student->PersonCode, $res->return->Student->PersonEmail, $res->return->Student->PersonGender, $res->return->Student->PersonBirthDay
+        );
+
+        $curr = new kompasCurriculum("");
+        $curr->get_cycles()->add_cycles(self::parse_cycles(
+                        $res->return->Curriculum));
+        $program = new kompasProgramOfStudy(
+                $res->return->Student->ContrOrganization, $res->return->Student->EduDepartment, $res->return->Student->EduLevel, $res->return->Student->EduForm, $res->return->Student->EduSpecialty, $res->return->Student->EduSpecialtyCode, $res->return->Student->EduSpecialization, $res->return->Student->EduQualification, $res->return->Student->EduBasicEdu, $res->return->Student->EduProgram, $res->return->Student->EduDuration, $curr
+        );
+        $ind = self::parse_subject_on_choice($res->return->SubjecsOnChoice);
+        
+        $stud = new kompasStudent(
+                $res->return->Student->EduBasicLang, $res->return->Student->EduGroup, 
+                $res->return->Student->EduSemester, $res->return->Student->EduStatus, 
+                $res->return->Student->EduCurSemStartDate, 
+                $res->return->Student->ContrNumber, 
+                $res->return->Student->ContrDate, $program, $ind
+        );
+        $result->add_student($stud);
         return $result;
     }
-	
-	protected static function get_ArrayOfStrings(Iterator &$list)
-    {
-        $res = new Array();
-		foreach($list as $value) {
-			$res [] = $value;
-		}
-		return res;
+
+    protected static function get_ArrayOfStrings(&$list) {
+        $res = Array();
+        foreach ($list as $value) {
+            $res [] = $value;
+        }
+        return array('String' => $res);
     }
-	
-	private static function &parse_subject_on_choice($response, kompasStudent &$student)
-	{
-		$result = new kompasIndividualSubjects($response->WhenAppro,
-			$response->Sended, $student);
-		if (is_array($response->Subject)) {
+
+    private static function &parse_subject_on_choice($response) {
+        $result = new kompasIndividualSubjects($response->Sended, $response->WhenAppro);
+        if (is_array($response->Subject)) {
             foreach ($response->Subject as $value) {
                 $result->add_subject($value);
             }
         } else {
             $result->add_subject($value);
         }
-		return $result;
-	}
-	
-	public static function &send_subject_on_choice_list(kompasStudent &$student, Iterator &$list) {
-        $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $student->get_agreement_number(),
-			'Subjects'=>get_ArrayOfStrings(&$list)));
-        //var_dump($res);
-        $result = self::parse_subject_on_choice($res->return);
         return $result;
     }
+
+    public static function &send_subject_on_choice_list(kompasStudent &$student, &$list) {
+        $arrayOfStrings = self::get_ArrayOfStrings($list);
+        $param = array('ContractNumber' => $student->get_agreement_number(),
+            'Subjects' => $arrayOfStrings);
+        try {
+            $res = self::singleton()->SendSubjectOnChoiceList(
+                    $param);
+        } catch (Exception $e) {
+           // echo "REQUEST HEADERS:\n<pre>" . self::singleton()->__getLastRequest() . "</pre>\n";
+        }
+
+        $result = 0; //self::parse_subject_on_choice($res->return, $student);
+        return $result;
+    }
+
 }
 
 ?>
