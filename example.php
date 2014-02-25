@@ -47,26 +47,10 @@ function PrintSemester(&$cyc, $sem) {
                     $col_count_cur = 0;
                     
                     foreach ($subject as $sw) {
-                        {
-                            if ($sw->get_type_testing()<>""){
-                                $col_count_cur ++;
-                                out_semester_work($JoinRow, $col_count_cur, $sub_code, $subject->get_name(), $hours, $sw->get_number(), $sw->get_type_testing());
-                            }
-                            if ($sw->control_work()) {
-                                $col_count_cur ++;
-                                out_semester_work($JoinRow, $col_count_cur, $sub_code, $subject->get_name(), $hours, $sw->get_number(), "Контрольная работа");
-                            }
-
-                            if ($sw->course_work()) {
-                                $col_count_cur ++;
-                                out_semester_work($JoinRow, $col_count_cur, $sub_code, $subject->get_name(), $hours, $sw->get_number(), "Курсовая работа");
-                            }
-
-                            if ($sw->course_project()) {
-                                $col_count_cur ++;
-                                out_semester_work($JoinRow, $col_count_cur, $sub_code, $subject->get_name(), $hours, $sw->get_number(), "Курсовой проект");
-                            }
-
+                        $types_testing = $sw->get_types_testing();
+                        foreach ($types_testing as $tt) {
+                            $col_count_cur ++;
+                            out_semester_work($JoinRow, $col_count_cur, $sub_code, $subject->get_name(), $hours, $sw->get_number(), $tt);
                         }
                     }
                 }
