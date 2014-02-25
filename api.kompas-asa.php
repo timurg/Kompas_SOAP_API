@@ -316,6 +316,42 @@ class kompasCurriculum {
     public function get_meta_info() {
         return $this->fmetainfo;
     }
+	
+	/**
+    * Возвращает перечень циклов дисциплин РУП
+    *
+    * @author Timur
+    * @return kompasSubject
+    */
+	public function find_subject(sub_name) {
+        $cycles = $this->get_cycles();
+        foreach ($cycles as $cycle) {
+            foreach ($cycle as $subject_group) {
+                    foreach ($subject_group as $key => $value) {
+						$sub = $subject_group->get_subject($key);
+                        if ($sub->get_name() == sub_name) {
+                            return $sub;
+                        }
+                    }
+            }
+        }
+		return null;
+    }
+	
+	public function find_subject_code(sub_name) {
+        $cycles = $this->get_cycles();
+        foreach ($cycles as $cycle) {
+            foreach ($cycle as $subject_group) {
+                    foreach ($subject_group as $key => $value) {
+						$sub = $subject_group->get_subject($key);
+                        if ($sub->get_name() == sub_name) {
+                            return $cycle->get_name()+"."+subject_group->get_number();
+                        }
+                    }
+            }
+        }
+		return null;
+    }
 
 }
 
