@@ -516,7 +516,8 @@ class kompasStudent {
     }
 
     public function get_agreement_date() {
-        return $this->ContrDate;
+        $dt = explode(" ",$this->ContrDate);
+        return $dt[0];
     }
 
     /**
@@ -631,7 +632,8 @@ class kompasPersonalData {
     }
 
     public function get_birthday() {
-        return $this->PersonBirthDay;
+		$dt = explode(" ",$this->PersonBirthDay);
+        return $dt[0];
     }
 
     public function get_full_name() {
