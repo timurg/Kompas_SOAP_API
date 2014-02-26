@@ -95,7 +95,7 @@ class typeTesting {
             case typeTesting::CourseWork:
                 return "Курсовая работа";
             default:
-                return "UNKNOWN (" + $this->get_id() + ")";
+                return "UNKNOWN (" . $this->get_id() . ")";
         };
     }
 
@@ -367,7 +367,7 @@ class kompasCurriculum {
                 foreach ($subject_group as $key => $value) {
                     $sub = $subject_group->get_subject($key);
                     if ($sub->get_name() == sub_name) {
-                        return $cycle->get_name() + "." + $subject_group->get_number();
+                        return $cycle->get_name() . "." . $subject_group->get_number();
                     }
                 }
             }
