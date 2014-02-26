@@ -351,7 +351,7 @@ class kompasCurriculum {
             foreach ($cycle as $subject_group) {
                 foreach ($subject_group as $key => $value) {
                     $sub = $subject_group->get_subject($key);
-                    if ($sub->get_name() == sub_name) {
+                    if ($sub->get_short_name() == sub_name) {
                         return $sub;
                     }
                 }
