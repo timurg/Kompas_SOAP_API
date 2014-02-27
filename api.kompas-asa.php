@@ -756,7 +756,6 @@ class kompasIndividualSubjects extends kompasArray {
     public function is_subject_present($sn) {
         foreach ($this as $sub_name) {
             if ($sub_name == $sn) {
-                echo $sub_name . " = " . $sn . "<br/>";
                 return true;
             }
         }
