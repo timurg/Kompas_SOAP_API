@@ -391,8 +391,13 @@ class kompasProgramOfStudy {
     private $EduProgram; //Программа подготовки
     private $EduDuration; //Срок обучения
     private $Curriculum; //учебный план
+	private $SupervisingDepartmentCode; //Код профильной кафедры
+	private $SupervisingDepartmentName; //Название профильной кафедры
 
-    public function __construct($fContrOrganization, $fEduDepartment, $fEduLevel, $fEduForm, $fEduSpecialty, $fEduSpecialtyCode, $fEduSpecialization, $fEduQualification, $fEduBasicEdu, $fEduProgram, $fEduDuration, &$fCurriculum) {
+    public function __construct($fContrOrganization, $fEduDepartment, $fEduLevel, $fEduForm, $fEduSpecialty, 
+		$fEduSpecialtyCode, $fEduSpecialization, $fEduQualification, $fEduBasicEdu, $fEduProgram, $fEduDuration,
+		$SupervisingDepartmentCode, $SupervisingDepartmentName,
+		&$fCurriculum) {
         $this->ContrOrganization = $fContrOrganization;
         $this->EduDepartment = $fEduDepartment;
         $this->EduLevel = $fEduLevel;
