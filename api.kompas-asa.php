@@ -1,13 +1,11 @@
 <?php
 
-//
 //$SETTINGS = array(
-//"end_point"=>"",
-//"pass" => "",
-//"login"=> "",
+//   "KOMPAS_WS_URL" => "*******",
+//    "KOMPAS_WS_LOGIN" => "******",
+//    "KOMPAS_WS_PASS" => "******",
 //);
-//
-require_once 'config.php';
+require_once 'settings.php';
 
 class kompasArray implements Iterator {
 
@@ -396,7 +394,7 @@ class kompasProgramOfStudy {
 
     public function __construct($fContrOrganization, $fEduDepartment, $fEduLevel, $fEduForm, $fEduSpecialty, 
 		$fEduSpecialtyCode, $fEduSpecialization, $fEduQualification, $fEduBasicEdu, $fEduProgram, $fEduDuration,
-		$SupervisingDepartmentCode, $SupervisingDepartmentName,
+		$aSupervisingDepartmentCode, $aSupervisingDepartmentName,
 		&$fCurriculum) {
         $this->ContrOrganization = $fContrOrganization;
         $this->EduDepartment = $fEduDepartment;
@@ -409,6 +407,8 @@ class kompasProgramOfStudy {
         $this->EduBasicEdu = $fEduBasicEdu;
         $this->EduProgram = $fEduProgram;
         $this->EduDuration = $fEduDuration;
+        $this->SupervisingDepartmentCode = $aSupervisingDepartmentCode;
+        $this->SupervisingDepartmentName = $aSupervisingDepartmentName;
         $this->Curriculum = $fCurriculum;
     }
 
@@ -454,6 +454,14 @@ class kompasProgramOfStudy {
 
     public function get_duration_education() {
         return $this->EduProgram;
+    }
+    
+    public function get_supervising_department_code() {
+        return $this->SupervisingDepartmentCode;
+    }
+    
+    public function get_supervising_department_name() {
+        return $this->SupervisingDepartmentName;
     }
 
     /**
@@ -559,6 +567,44 @@ class kompasStudent {
                 }
             }
         }
+    }
+    
+    /**
+    * Возвращает список дисциплин для выбора
+    *
+    * @author Dmitriy Ilyuschenkov
+    * @return array of kompasSubjectGroup
+    */
+     public function get_individual_subjects_list_for_choice() {
+        $arRes = array();
+        $curricula = $this->get_curent_program()->get_curriculum();
+        $cycles = $curricula->get_cycles();
+        foreach ($cycles as $cycle) {
+            foreach ($cycle as $subject_group) {
+                if ($subject_group->get_number() <> "0") {    
+                    $gname = $subject_group->get_number();
+                    $arrSubj = array();
+                    foreach ($subject_group as $subj){
+                        $arrSubj[] = $subj->get_name();  
+                    }
+                    $arRes[] = array(
+                            "gname"     => $gname,
+                            "subjects"  => $arrSubj
+                    );
+                }
+            }
+        }
+        return $arRes;
+    }
+    
+    public function get_selected_individual_subject_list() {
+        $arRes = array();
+        $arrSubjectStr = $this->get_individual_subjects();
+        foreach ($arrSubjectStr as $s){
+            $code = $this->Program->get_curriculum()->find_subject_code($s);
+            $arRes[]=array("code" => $code, "name" => $s);
+        }
+        return $arRes;
     }
 
     public function has_individual_plan() {
@@ -726,9 +772,9 @@ class kompasFactory {
     public static function singleton() {
         if (!isset(self::$client)) {
             //ini_set('soap.wsdl_cache_enabled', '0');
-            ini_set('soap.wsdl_cache_ttl', '10');
             global $SETTINGS;
-            self::$client = new SoapClient($SETTINGS["end_point"], array('login' => $SETTINGS["login"], 'password' => $SETTINGS["pass"]));
+            self::$client = new SoapClient($SETTINGS["KOMPAS_WS_URL"], 
+                    array('login' => $SETTINGS["KOMPAS_WS_LOGIN"], 'password' => $SETTINGS["KOMPAS_WS_PASS"]));
         }
         return self::$client;
     }
@@ -838,19 +884,46 @@ class kompasFactory {
         $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $student_id));
         //var_dump($res);
         $result = new kompasPersonalData(
-                $res->return->Student->PersonFirstName, $res->return->Student->PersonLastName, $res->return->Student->PersonPatronymic, $res->return->Student->PersonCode, $res->return->Student->PersonEmail, $res->return->Student->PersonGender, $res->return->Student->PersonBirthDay
+                $res->return->Student->PersonFirstName, $res->return->Student->PersonLastName, 
+                $res->return->Student->PersonPatronymic, $res->return->Student->PersonCode, 
+                $res->return->Student->PersonEmail, $res->return->Student->PersonGender, 
+                $res->return->Student->PersonBirthDay
         );
 
         $curr = new kompasCurriculum("");
         $curr->get_cycles()->add_cycles(self::parse_cycles(
                         $res->return->Curriculum));
+        $SupervisingDepartmentCode = "";
+        $SupervisingDepartmentName = "";
+        
+        if (isset($res->return->Curriculum->SupervisingDepartmentCode))
+        {
+            $SupervisingDepartmentCode = $res->return->Curriculum->SupervisingDepartmentCode;
+        }
+        
+        if (isset($res->return->Curriculum->SupervisingDepartmentName))
+        {
+            $SupervisingDepartmentName = $res->return->Curriculum->SupervisingDepartmentName;
+        }
+        
         $program = new kompasProgramOfStudy(
-                $res->return->Student->ContrOrganization, $res->return->Student->EduDepartment, $res->return->Student->EduLevel, $res->return->Student->EduForm, $res->return->Student->EduSpecialty, $res->return->Student->EduSpecialtyCode, $res->return->Student->EduSpecialization, $res->return->Student->EduQualification, $res->return->Student->EduBasicEdu, $res->return->Student->EduProgram, $res->return->Student->EduDuration, $curr
+                $res->return->Student->ContrOrganization, $res->return->Student->EduDepartment, 
+                $res->return->Student->EduLevel, $res->return->Student->EduForm, 
+                $res->return->Student->EduSpecialty, $res->return->Student->EduSpecialtyCode, 
+                $res->return->Student->EduSpecialization, $res->return->Student->EduQualification, 
+                $res->return->Student->EduBasicEdu, $res->return->Student->EduProgram, 
+                $res->return->Student->EduDuration,
+                $SupervisingDepartmentCode,
+                $SupervisingDepartmentName,
+                $curr
         );
         $ind = self::parse_subject_on_choice($res->return->SubjecsOnChoice);
 
         $stud = new kompasStudent(
-                $res->return->Student->EduBasicLang, $res->return->Student->EduGroup, $res->return->Student->EduSemester, $res->return->Student->EduStatus, $res->return->Student->EduCurSemStartDate, $res->return->Student->ContrNumber, $res->return->Student->ContrDate, $program, $ind
+                $res->return->Student->EduBasicLang, $res->return->Student->EduGroup, 
+                $res->return->Student->EduSemester, $res->return->Student->EduStatus, 
+                $res->return->Student->EduCurSemStartDate, $res->return->Student->ContrNumber, 
+                $res->return->Student->ContrDate, $program, $ind
         );
         $result->add_student($stud);
         return $result;
