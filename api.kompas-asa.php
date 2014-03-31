@@ -889,22 +889,23 @@ class kompasFactory {
                 $res->return->Student->PersonBirthDay
         );
 
+		$SupervisingDepartmentCode = "";
+		$SupervisingDepartmentName = "";
+		
         $curr = new kompasCurriculum("");
-        $curr->get_cycles()->add_cycles(self::parse_cycles(
+		if (isset($res->return->Curriculum))
+        {
+			$curr->get_cycles()->add_cycles(self::parse_cycles(
                         $res->return->Curriculum));
-        $SupervisingDepartmentCode = "";
-        $SupervisingDepartmentName = "";
-        
-        if (isset($res->return->Curriculum->SupervisingDepartmentCode))
-        {
-            $SupervisingDepartmentCode = $res->return->Curriculum->SupervisingDepartmentCode;
-        }
-        
-        if (isset($res->return->Curriculum->SupervisingDepartmentName))
-        {
-            $SupervisingDepartmentName = $res->return->Curriculum->SupervisingDepartmentName;
-        }
-        
+			if (isset($res->return->Curriculum->SupervisingDepartmentCode))
+			{
+				$SupervisingDepartmentCode = $res->return->Curriculum->SupervisingDepartmentCode;
+			}
+			if (isset($res->return->Curriculum->SupervisingDepartmentName))
+			{
+				$SupervisingDepartmentName = $res->return->Curriculum->SupervisingDepartmentName;
+			}
+		}
         $program = new kompasProgramOfStudy(
                 $res->return->Student->ContrOrganization, $res->return->Student->EduDepartment, 
                 $res->return->Student->EduLevel, $res->return->Student->EduForm, 
