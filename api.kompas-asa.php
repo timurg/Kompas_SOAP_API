@@ -93,7 +93,7 @@ class typeTesting {
             case typeTesting::CourseWork:
                 return "Курсовая работа";
             default:
-                return "UNKNOWN (" . $this->get_id() + ")";
+                return "UNKNOWN (" . $this->get_id() . ")";
         };
     }
 
