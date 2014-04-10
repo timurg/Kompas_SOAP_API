@@ -963,6 +963,28 @@ class kompasFactory {
         $result = 0; //self::parse_subject_on_choice($res->return, $student);
         return $result;
     }
+	
+	
+	
+	public static function read_dictionary($dictionary_name, $owner = null) {
+        $res = self::singleton()->readDictionary(array('DictionaryName' => $dictionary_name,
+            'language' => "ru-RU"));
+			
+		$result = array();
+		if (is_array($res->return->DictionaryValues)) {
+            foreach ($res->return->DictionaryValues as $value) {
+				if (($owner == null) || ($value->owner==$owner))
+				{
+					$result[$value->key] = $value->value;
+				}
+            }
+        }
+		else
+		{
+            $result[$res->return->DictionaryValues->key] = $res->return->DictionaryValues->value;
+        }
+        return $result;
+    }
 
 }
 
