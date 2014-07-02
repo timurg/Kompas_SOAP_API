@@ -391,10 +391,13 @@ class kompasProgramOfStudy {
     private $Curriculum; //учебный план
 	private $SupervisingDepartmentCode; //Код профильной кафедры
 	private $SupervisingDepartmentName; //Название профильной кафедры
+	private $EduDirectionAbbreviation; //Код профильной кафедры
+	private $EduSpecialtyAbbreviation; //Название профильной кафедры
 
     public function __construct($fContrOrganization, $fEduDepartment, $fEduLevel, $fEduForm, $fEduSpecialty, 
 		$fEduSpecialtyCode, $fEduSpecialization, $fEduQualification, $fEduBasicEdu, $fEduProgram, $fEduDuration,
 		$aSupervisingDepartmentCode, $aSupervisingDepartmentName,
+		$fEduDirectionAbbreviation, $fEduSpecialtyAbbreviation,
 		&$fCurriculum) {
         $this->ContrOrganization = $fContrOrganization;
         $this->EduDepartment = $fEduDepartment;
@@ -409,6 +412,8 @@ class kompasProgramOfStudy {
         $this->EduDuration = $fEduDuration;
         $this->SupervisingDepartmentCode = $aSupervisingDepartmentCode;
         $this->SupervisingDepartmentName = $aSupervisingDepartmentName;
+		$this->EduDirectionAbbreviation = $fEduDirectionAbbreviation;
+		$this->EduSpecialtyAbbreviation = $fEduSpecialtyAbbreviation;
         $this->Curriculum = $fCurriculum;
     }
 
@@ -462,6 +467,14 @@ class kompasProgramOfStudy {
     
     public function get_supervising_department_name() {
         return $this->SupervisingDepartmentName;
+    }
+	
+	public function get_direction_abbreviation() {
+        return $this->EduDirectionAbbreviation;
+    }
+	
+	public function get_specialty_abbreviation() {
+        return $this->EduSpecialtyAbbreviation;
     }
 
     /**
@@ -915,6 +928,8 @@ class kompasFactory {
                 $res->return->Student->EduDuration,
                 $SupervisingDepartmentCode,
                 $SupervisingDepartmentName,
+				$res->return->Student->EduDirectionAbbreviation,
+				$res->return->Student->EduSpecialtyAbbreviation,
                 $curr
         );
         $ind = self::parse_subject_on_choice($res->return->SubjecsOnChoice);
