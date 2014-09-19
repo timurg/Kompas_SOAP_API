@@ -16,6 +16,72 @@ class kompasTypesTesting extends kompasArray {
 
 }
 
+class kompasPaymentInfo {
+	private $fBankName;
+    private $fBankCode;
+    private $fValue;
+	private $fHalfYearName;
+	private $fPaymentTypeName;
+	private $fPaymentDate;
+	private $fOperationType;
+	
+	public function __construct($aBankName, $aBankCode, $aValue, $aHalfYearName,
+		$aPaymentTypeName, $aPaymentDate, $aOperationType) {
+        $this->fBankName = $aBankName;
+        $this->fBankCode = $aBankCode;
+        $this->fValue = $aValue;
+		$this->fHalfYearName = $aHalfYearName;
+		$this->fPaymentTypeName = $aPaymentTypeName;
+		$this->fPaymentDate = $aPaymentDate;
+		$this->fOperationType = $aOperationType;
+    }
+	public function get_bank_name() {
+		return $this->fBankName;
+	}
+	
+	public function get_bank_code() {
+		return $this->fBankCode;
+	}
+	
+	public function get_value() {
+		return $this->fValue;
+	}
+	
+	public function get_half_year_name() {
+		return $this->fHalfYearName;
+	}
+	
+	public function get_type_name() {
+		return $this->fPaymentTypeName;
+	}
+	
+	public function get_date() {
+		return $this->fPaymentDate;
+	}
+	
+	public function get_operation_type() {
+		return $this->fOperationType;
+	}
+}
+
+class kompasPayments extends kompasArray {
+
+    public function add_payment(kompasPaymentInfo $tt) {
+        $this->add($tt);
+    }
+	
+	/**
+     * Возвращает информацию по оплате по индексу.
+     *
+     * @author Timur
+     * @return kompasPaymentInfo
+     */
+    public function &get_payment($inx) {
+        return $this->get_value($inx);
+    }
+
+}
+
 class kompasSemesterWork {
 
     private $fnumber;
@@ -409,6 +475,7 @@ class kompasStudent {
     private $ContrDate; //Дата заключения договора
     private $Program; //kompasProgramOfStudy
     private $IndividualSubjects; //kompasIndividualSubjects
+	private $Payments; //kompasPayments
 
     public function __construct($fEduBasicLang, $fEduGroup, $fEduSemester, $fEduStatus, $fEduCurSemStartDate, $fContrNumber, $fContrDate, &$fProgram, kompasIndividualSubjects &$fIndividualSubjects) {
         $this->EduBasicLang = $fEduBasicLang;
@@ -424,6 +491,7 @@ class kompasStudent {
         if ($fIndividualSubjects->is_appro()) {
             $this->apply_individual_subjects();
         }
+		$this->Payments = NULL;
     }
 
     public function get_basic_lang() {
@@ -454,6 +522,21 @@ class kompasStudent {
         $dt = explode(" ",$this->ContrDate);
         return $dt[0];
     }
+	
+	/**
+     * Возвращает информацию о движении средств связанных с договором студента. Ленивая загрузка.
+     *
+     * @author Timur
+     * @return kompasPayments
+     */
+	public function get_payments()
+	{
+		if (is_null($this->Payments))
+		{
+			$this->Payments = kompasFactory::get_student_payments($this->get_agreement_number());
+		}
+		return $this->Payments;
+	}
 
     /**
      * Возвращает информацию о направлении подготовки студента
@@ -868,7 +951,25 @@ class kompasFactory {
                 $result->add_subject($value);
             }
         } else {
-            $result->add_subject($value);
+            $result->add_subject($response->Subject);
+        }
+        return $result;
+    }
+	
+	private static function &parse_payment_info($response) {
+        $result = new kompasPaymentInfo($response->BankName, $response->BankCode, $response->Value, $response->HalfYearName,
+		$response->PaymentTypeName, $response->PaymentDate, $response->OperationType);
+        return $result;
+    }
+	
+	private static function &parse_payments($response) {
+		$result = new kompasPayments();
+        if (is_array($response->Payments)) {
+            foreach ($response->Payments as $value) {
+                $result->add_payment(self::parse_payment_info($value));
+            }
+        } else {
+            $result->add_payment(self::parse_payment_info($response->Payments));
         }
         return $result;
     }
@@ -888,7 +989,11 @@ class kompasFactory {
         return $result;
     }
 	
-	
+	public static function get_student_payments($student_id)
+	{
+		$res = self::singleton()->getPayments(array('ContractNumber' => $student_id));
+		return self::parse_payments($res->return);
+	}
 	
 	public static function read_dictionary($dictionary_name, $owner = null) {
         $res = self::singleton()->readDictionary(array('DictionaryName' => $dictionary_name,
