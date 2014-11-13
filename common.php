@@ -1,4 +1,4 @@
-<?php
+ï»¿<?php
 class kompasArray implements Iterator {
     private $container;
 
@@ -70,17 +70,17 @@ class typeTesting {
     public function __toString() {
         switch ($this->get_id()) {
             case typeTesting::Test:
-                return "Çà÷¸ò";
+                return "Ğ—Ğ°Ñ‡Ñ‘Ñ‚";
             case typeTesting::Exam:
-                return "İêçàìåí";
+                return "Ğ­ĞºĞ·Ğ°Ğ¼ĞµĞ½";
             case typeTesting::CombinedTest:
-                return "Äèô. çà÷¸ò";
+                return "Ğ”Ğ¸Ñ„. Ğ·Ğ°Ñ‡Ñ‘Ñ‚";
             case typeTesting::ControlWork:
-                return "Êîíòğîëüíàÿ ğàáîòà";
+                return "ĞšĞ¾Ğ½Ñ‚Ñ€Ğ¾Ğ»ÑŒĞ½Ğ°Ñ Ñ€Ğ°Ğ±Ğ¾Ñ‚Ğ°";
             case typeTesting::CourseProject:
-                return "Êóğñîâîé ïğîåêò";
+                return "ĞšÑƒÑ€ÑĞ¾Ğ²Ğ¾Ğ¹ Ğ¿Ñ€Ğ¾ĞµĞºÑ‚";
             case typeTesting::CourseWork:
-                return "Êóğñîâàÿ ğàáîòà";
+                return "ĞšÑƒÑ€ÑĞ¾Ğ²Ğ°Ñ Ñ€Ğ°Ğ±Ğ¾Ñ‚Ğ°";
             default:
                 return "UNKNOWN (" . $this->get_id() . ")";
         };
