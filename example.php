@@ -133,8 +133,8 @@ $PrintedSubject = array();
             table.packages td.title,table.packages td.empty {
                 background-color: transparent;
                 padding: 0;
-                margin: 0
-                    border-bottom: none;
+                margin: 0;
+                border-bottom: none;
             }
             table.packages td.empty {
                 border-bottom: 1px solid #dfe7e7;
