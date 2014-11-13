@@ -8,6 +8,13 @@
 require_once 'settings.php';
 require_once 'common.php';
 
+/**
+ * Коды ошибок Компас-В: 210 - 290
+ */
+class kompasException extends veguException {
+    
+}
+
 class kompasTypesTesting extends kompasArray {
 
     public function add_type_testing(typeTesting $tt) {
@@ -773,16 +780,24 @@ class kompasFactory {
 
     private static $client;
 
+    
     public static function singleton() {
         if (!isset(self::$client)) {
             //ini_set('soap.wsdl_cache_enabled', '0');
             global $SETTINGS;
             self::$client = new SoapClient($SETTINGS["KOMPAS_WS_URL"], 
-                    array('login' => $SETTINGS["KOMPAS_WS_LOGIN"], 'password' => $SETTINGS["KOMPAS_WS_PASS"]));
+                    array('login' => $SETTINGS["KOMPAS_WS_LOGIN"], 'password' => $SETTINGS["KOMPAS_WS_PASS"], 'exceptions' => 0));
         }
         return self::$client;
     }
 
+    private static function check_result($result, $err_code = 0, $internal_message = "Ошибка при отправке запроса КИС.", $agreement_number = NULL) {
+        if (is_soap_fault($result)) {
+            throw new kompasException($internal_message, $err_code, $result, $agreement_number);
+        }
+        return true;
+    }
+    
     private static function &parse_semester_work($response) {
         $att = "";
         $res = new kompasSemesterWork($response->Semester, $response->Hours);
@@ -877,7 +892,7 @@ class kompasFactory {
 
     public static function &get_user_curriculum($un) {
         $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $un));
-        //var_dump($res);
+        self::check_result($res, 211, "Ошибка при получении учебного плана студента из КИС.", $un);
         $result = new kompasCurriculum("");
         $result->get_cycles()->add_cycles(self::parse_cycles(
                         $res->return->Curriculum));
@@ -886,7 +901,7 @@ class kompasFactory {
 
     public static function &get_student($student_id) {
         $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $student_id));
-        //var_dump($res);
+        self::check_result($res, 210, "Ошибка при получении сведений о студенте из КИС.", $student_id);
         $result = new kompasPersonalData(
                 $res->return->Student->PersonFirstName, $res->return->Student->PersonLastName, 
                 $res->return->Student->PersonPatronymic, $res->return->Student->PersonCode, 
@@ -978,27 +993,23 @@ class kompasFactory {
         $arrayOfStrings = self::get_ArrayOfStrings($list);
         $param = array('ContractNumber' => $student->get_agreement_number(),
             'Subjects' => $arrayOfStrings);
-        try {
             $res = self::singleton()->SendSubjectOnChoiceList(
                     $param);
-        } catch (Exception $e) {
-            // echo "REQUEST HEADERS:\n<pre>" . self::singleton()->__getLastRequest() . "</pre>\n";
-        }
-
-        $result = 0; //self::parse_subject_on_choice($res->return, $student);
-        return $result;
+        return self::check_result($res, 220, "Ошибка при отправке перечня выбранных дисциплин в КИС.", $student->get_agreement_number());
     }
 	
 	public static function get_student_payments($student_id)
 	{
 		$res = self::singleton()->getPayments(array('ContractNumber' => $student_id));
+                self::check_result($res, 240, "Ошибка при чтении информации по выплатам студента из КИС.", $student->get_agreement_number());
 		return self::parse_payments($res->return);
 	}
 	
 	public static function read_dictionary($dictionary_name, $owner = null) {
         $res = self::singleton()->readDictionary(array('DictionaryName' => $dictionary_name,
             'language' => "ru-RU"));
-			
+	self::check_result($res, 230, "Ошибка при чтении справочника из КИС.");
+
 		$result = array();
 		if (is_array($res->return->DictionaryValues)) {
             foreach ($res->return->DictionaryValues as $value) {

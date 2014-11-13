@@ -88,4 +88,23 @@ class typeTesting {
 
 }
 
+/**
+ * Общий класс ошибок для АСА и Компас-В
+ * @author Timur
+ */
+class veguException extends Exception {
+
+    private $fagreement_number;
+
+    public function get_agreement_number() {
+        return $this->fagreement_number;
+    }
+
+    public function __construct($message, $code, $previous, $agreement_number = NULL) {
+        parent::__construct($message, $code, $previous);
+        $this->fagreement_number = $agreement_number;
+    }
+
+}
+
 ?>

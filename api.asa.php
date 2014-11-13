@@ -2,6 +2,13 @@
 
 require_once 'common.php';
 
+/**
+ * Коды ошибок АСА: 10 - 90
+ */
+class asaException extends veguException {
+    
+}
+
 class asaMatriculaRecord {
 
     private $fform_attestation;
