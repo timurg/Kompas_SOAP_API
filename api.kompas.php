@@ -24,51 +24,53 @@ class kompasTypesTesting extends kompasArray {
 }
 
 class kompasPaymentInfo {
-	private $fBankName;
+
+    private $fBankName;
     private $fBankCode;
     private $fValue;
-	private $fHalfYearName;
-	private $fPaymentTypeName;
-	private $fPaymentDate;
-	private $fOperationType;
-	
-	public function __construct($aBankName, $aBankCode, $aValue, $aHalfYearName,
-		$aPaymentTypeName, $aPaymentDate, $aOperationType) {
+    private $fHalfYearName;
+    private $fPaymentTypeName;
+    private $fPaymentDate;
+    private $fOperationType;
+
+    public function __construct($aBankName, $aBankCode, $aValue, $aHalfYearName, $aPaymentTypeName, $aPaymentDate, $aOperationType) {
         $this->fBankName = $aBankName;
         $this->fBankCode = $aBankCode;
         $this->fValue = $aValue;
-		$this->fHalfYearName = $aHalfYearName;
-		$this->fPaymentTypeName = $aPaymentTypeName;
-		$this->fPaymentDate = $aPaymentDate;
-		$this->fOperationType = $aOperationType;
+        $this->fHalfYearName = $aHalfYearName;
+        $this->fPaymentTypeName = $aPaymentTypeName;
+        $this->fPaymentDate = $aPaymentDate;
+        $this->fOperationType = $aOperationType;
     }
-	public function get_bank_name() {
-		return $this->fBankName;
-	}
-	
-	public function get_bank_code() {
-		return $this->fBankCode;
-	}
-	
-	public function get_value() {
-		return $this->fValue;
-	}
-	
-	public function get_half_year_name() {
-		return $this->fHalfYearName;
-	}
-	
-	public function get_type_name() {
-		return $this->fPaymentTypeName;
-	}
-	
-	public function get_date() {
-		return $this->fPaymentDate;
-	}
-	
-	public function get_operation_type() {
-		return $this->fOperationType;
-	}
+
+    public function get_bank_name() {
+        return $this->fBankName;
+    }
+
+    public function get_bank_code() {
+        return $this->fBankCode;
+    }
+
+    public function get_value() {
+        return $this->fValue;
+    }
+
+    public function get_half_year_name() {
+        return $this->fHalfYearName;
+    }
+
+    public function get_type_name() {
+        return $this->fPaymentTypeName;
+    }
+
+    public function get_date() {
+        return $this->fPaymentDate;
+    }
+
+    public function get_operation_type() {
+        return $this->fOperationType;
+    }
+
 }
 
 class kompasPayments extends kompasArray {
@@ -76,8 +78,8 @@ class kompasPayments extends kompasArray {
     public function add_payment(kompasPaymentInfo $tt) {
         $this->add($tt);
     }
-	
-	/**
+
+    /**
      * Возвращает информацию по оплате по индексу.
      *
      * @author Timur
@@ -98,11 +100,11 @@ class kompasSemesterWork {
     public function get_number() {
         return $this->fnumber;
     }
-    
+
     public function get_hours() {
         return $this->fHours;
     }
-    
+
     /**
      * Возвращает перечень видов аттестаций
      *
@@ -371,16 +373,12 @@ class kompasProgramOfStudy {
     private $EduProgram; //Программа подготовки
     private $EduDuration; //Срок обучения
     private $Curriculum; //учебный план
-	private $SupervisingDepartmentCode; //Код профильной кафедры
-	private $SupervisingDepartmentName; //Название профильной кафедры
-	private $EduDirectionAbbreviation; //Аббревиатура специальности (направления)
-	private $EduSpecialtyAbbreviation; //Аббревиатура специализации (профиля)
+    private $SupervisingDepartmentCode; //Код профильной кафедры
+    private $SupervisingDepartmentName; //Название профильной кафедры
+    private $EduDirectionAbbreviation; //Аббревиатура специальности (направления)
+    private $EduSpecialtyAbbreviation; //Аббревиатура специализации (профиля)
 
-    public function __construct($fContrOrganization, $fEduDepartment, $fEduLevel, $fEduForm, $fEduSpecialty, 
-		$fEduSpecialtyCode, $fEduSpecialization, $fEduQualification, $fEduBasicEdu, $fEduProgram, $fEduDuration,
-		$aSupervisingDepartmentCode, $aSupervisingDepartmentName,
-		$fEduDirectionAbbreviation, $fEduSpecialtyAbbreviation,
-		&$fCurriculum) {
+    public function __construct($fContrOrganization, $fEduDepartment, $fEduLevel, $fEduForm, $fEduSpecialty, $fEduSpecialtyCode, $fEduSpecialization, $fEduQualification, $fEduBasicEdu, $fEduProgram, $fEduDuration, $aSupervisingDepartmentCode, $aSupervisingDepartmentName, $fEduDirectionAbbreviation, $fEduSpecialtyAbbreviation, &$fCurriculum) {
         $this->ContrOrganization = $fContrOrganization;
         $this->EduDepartment = $fEduDepartment;
         $this->EduLevel = $fEduLevel;
@@ -394,8 +392,8 @@ class kompasProgramOfStudy {
         $this->EduDuration = $fEduDuration;
         $this->SupervisingDepartmentCode = $aSupervisingDepartmentCode;
         $this->SupervisingDepartmentName = $aSupervisingDepartmentName;
-		$this->EduDirectionAbbreviation = $fEduDirectionAbbreviation;
-		$this->EduSpecialtyAbbreviation = $fEduSpecialtyAbbreviation;
+        $this->EduDirectionAbbreviation = $fEduDirectionAbbreviation;
+        $this->EduSpecialtyAbbreviation = $fEduSpecialtyAbbreviation;
         $this->Curriculum = $fCurriculum;
     }
 
@@ -442,20 +440,20 @@ class kompasProgramOfStudy {
     public function get_duration_education() {
         return $this->EduProgram;
     }
-    
+
     public function get_supervising_department_code() {
         return $this->SupervisingDepartmentCode;
     }
-    
+
     public function get_supervising_department_name() {
         return $this->SupervisingDepartmentName;
     }
-	
-	public function get_direction_abbreviation() {
+
+    public function get_direction_abbreviation() {
         return $this->EduDirectionAbbreviation;
     }
-	
-	public function get_specialty_abbreviation() {
+
+    public function get_specialty_abbreviation() {
         return $this->EduSpecialtyAbbreviation;
     }
 
@@ -482,7 +480,7 @@ class kompasStudent {
     private $ContrDate; //Дата заключения договора
     private $Program; //kompasProgramOfStudy
     private $IndividualSubjects; //kompasIndividualSubjects
-	private $Payments; //kompasPayments
+    private $Payments; //kompasPayments
 
     public function __construct($fEduBasicLang, $fEduGroup, $fEduSemester, $fEduStatus, $fEduCurSemStartDate, $fContrNumber, $fContrDate, &$fProgram, kompasIndividualSubjects &$fIndividualSubjects) {
         $this->EduBasicLang = $fEduBasicLang;
@@ -498,7 +496,7 @@ class kompasStudent {
         if ($fIndividualSubjects->is_appro()) {
             $this->apply_individual_subjects();
         }
-		$this->Payments = NULL;
+        $this->Payments = NULL;
     }
 
     public function get_basic_lang() {
@@ -526,24 +524,22 @@ class kompasStudent {
     }
 
     public function get_agreement_date() {
-        $dt = explode(" ",$this->ContrDate);
+        $dt = explode(" ", $this->ContrDate);
         return $dt[0];
     }
-	
-	/**
+
+    /**
      * Возвращает информацию о движении средств связанных с договором студента. Ленивая загрузка.
      *
      * @author Timur
      * @return kompasPayments
      */
-	public function get_payments()
-	{
-		if (is_null($this->Payments))
-		{
-			$this->Payments = kompasFactory::get_student_payments($this->get_agreement_number());
-		}
-		return $this->Payments;
-	}
+    public function get_payments() {
+        if (is_null($this->Payments)) {
+            $this->Payments = kompasFactory::get_student_payments($this->get_agreement_number());
+        }
+        return $this->Payments;
+    }
 
     /**
      * Возвращает информацию о направлении подготовки студента
@@ -580,41 +576,41 @@ class kompasStudent {
             }
         }
     }
-    
+
     /**
-    * Возвращает список дисциплин для выбора
-    *
-    * @author Dmitriy Ilyuschenkov
-    * @return array of kompasSubjectGroup
-    */
-     public function get_individual_subjects_list_for_choice() {
+     * Возвращает список дисциплин для выбора
+     *
+     * @author Dmitriy Ilyuschenkov
+     * @return array of kompasSubjectGroup
+     */
+    public function get_individual_subjects_list_for_choice() {
         $arRes = array();
         $curricula = $this->get_curent_program()->get_curriculum();
         $cycles = $curricula->get_cycles();
         foreach ($cycles as $cycle) {
             foreach ($cycle as $subject_group) {
-                if ($subject_group->get_number() <> "0") {    
+                if ($subject_group->get_number() <> "0") {
                     $gname = $subject_group->get_number();
                     $arrSubj = array();
-                    foreach ($subject_group as $subj){
-                        $arrSubj[] = $subj->get_name();  
+                    foreach ($subject_group as $subj) {
+                        $arrSubj[] = $subj->get_name();
                     }
                     $arRes[] = array(
-                            "gname"     => $gname,
-                            "subjects"  => $arrSubj
+                        "gname" => $gname,
+                        "subjects" => $arrSubj
                     );
                 }
             }
         }
         return $arRes;
     }
-    
+
     public function get_selected_individual_subject_list() {
         $arRes = array();
         $arrSubjectStr = $this->get_individual_subjects();
-        foreach ($arrSubjectStr as $s){
+        foreach ($arrSubjectStr as $s) {
             $code = $this->Program->get_curriculum()->find_subject_code($s);
-            $arRes[]=array("code" => $code, "name" => $s);
+            $arRes[] = array("code" => $code, "name" => $s);
         }
         return $arRes;
     }
@@ -695,7 +691,7 @@ class kompasPersonalData {
     }
 
     public function get_birthday() {
-		$dt = explode(" ",$this->PersonBirthDay);
+        $dt = explode(" ", $this->PersonBirthDay);
         return $dt[0];
     }
 
@@ -780,13 +776,11 @@ class kompasFactory {
 
     private static $client;
 
-    
     public static function singleton() {
         if (!isset(self::$client)) {
             //ini_set('soap.wsdl_cache_enabled', '0');
             global $SETTINGS;
-            self::$client = new SoapClient($SETTINGS["KOMPAS_WS_URL"], 
-                    array('login' => $SETTINGS["KOMPAS_WS_LOGIN"], 'password' => $SETTINGS["KOMPAS_WS_PASS"], 'exceptions' => 0));
+            self::$client = new SoapClient($SETTINGS["KOMPAS_WS_URL"], array('login' => $SETTINGS["KOMPAS_WS_LOGIN"], 'password' => $SETTINGS["KOMPAS_WS_PASS"], 'exceptions' => 0));
         }
         return self::$client;
     }
@@ -797,7 +791,7 @@ class kompasFactory {
         }
         return true;
     }
-    
+
     private static function &parse_semester_work($response) {
         $att = "";
         $res = new kompasSemesterWork($response->Semester, $response->Hours);
@@ -903,49 +897,30 @@ class kompasFactory {
         $res = self::singleton()->GetFullStudentInfo(array('KontrNumber' => $student_id));
         self::check_result($res, 210, "Ошибка при получении сведений о студенте из КИС.", $student_id);
         $result = new kompasPersonalData(
-                $res->return->Student->PersonFirstName, $res->return->Student->PersonLastName, 
-                $res->return->Student->PersonPatronymic, $res->return->Student->PersonCode, 
-                $res->return->Student->PersonEmail, $res->return->Student->PersonGender, 
-                $res->return->Student->PersonBirthDay
+                $res->return->Student->PersonFirstName, $res->return->Student->PersonLastName, $res->return->Student->PersonPatronymic, $res->return->Student->PersonCode, $res->return->Student->PersonEmail, $res->return->Student->PersonGender, $res->return->Student->PersonBirthDay
         );
 
-		$SupervisingDepartmentCode = "";
-		$SupervisingDepartmentName = "";
-		
+        $SupervisingDepartmentCode = "";
+        $SupervisingDepartmentName = "";
+
         $curr = new kompasCurriculum("");
-		if (isset($res->return->Curriculum))
-        {
-			$curr->get_cycles()->add_cycles(self::parse_cycles(
-                        $res->return->Curriculum));
-			if (isset($res->return->Curriculum->SupervisingDepartmentCode))
-			{
-				$SupervisingDepartmentCode = $res->return->Curriculum->SupervisingDepartmentCode;
-			}
-			if (isset($res->return->Curriculum->SupervisingDepartmentName))
-			{
-				$SupervisingDepartmentName = $res->return->Curriculum->SupervisingDepartmentName;
-			}
-		}
+        if (isset($res->return->Curriculum)) {
+            $curr->get_cycles()->add_cycles(self::parse_cycles(
+                            $res->return->Curriculum));
+            if (isset($res->return->Curriculum->SupervisingDepartmentCode)) {
+                $SupervisingDepartmentCode = $res->return->Curriculum->SupervisingDepartmentCode;
+            }
+            if (isset($res->return->Curriculum->SupervisingDepartmentName)) {
+                $SupervisingDepartmentName = $res->return->Curriculum->SupervisingDepartmentName;
+            }
+        }
         $program = new kompasProgramOfStudy(
-                $res->return->Student->ContrOrganization, $res->return->Student->EduDepartment, 
-                $res->return->Student->EduLevel, $res->return->Student->EduForm, 
-                $res->return->Student->EduSpecialty, $res->return->Student->EduSpecialtyCode, 
-                $res->return->Student->EduSpecialization, $res->return->Student->EduQualification, 
-                $res->return->Student->EduBasicEdu, $res->return->Student->EduProgram, 
-                $res->return->Student->EduDuration,
-                $SupervisingDepartmentCode,
-                $SupervisingDepartmentName,
-				$res->return->Student->EduDirectionAbbreviation,
-				$res->return->Student->EduSpecialtyAbbreviation,
-                $curr
+                $res->return->Student->ContrOrganization, $res->return->Student->EduDepartment, $res->return->Student->EduLevel, $res->return->Student->EduForm, $res->return->Student->EduSpecialty, $res->return->Student->EduSpecialtyCode, $res->return->Student->EduSpecialization, $res->return->Student->EduQualification, $res->return->Student->EduBasicEdu, $res->return->Student->EduProgram, $res->return->Student->EduDuration, $SupervisingDepartmentCode, $SupervisingDepartmentName, $res->return->Student->EduDirectionAbbreviation, $res->return->Student->EduSpecialtyAbbreviation, $curr
         );
         $ind = self::parse_subject_on_choice($res->return->SubjecsOnChoice);
 
         $stud = new kompasStudent(
-                $res->return->Student->EduBasicLang, $res->return->Student->EduGroup, 
-                $res->return->Student->EduSemester, $res->return->Student->EduStatus, 
-                $res->return->Student->EduCurSemStartDate, $res->return->Student->ContrNumber, 
-                $res->return->Student->ContrDate, $program, $ind
+                $res->return->Student->EduBasicLang, $res->return->Student->EduGroup, $res->return->Student->EduSemester, $res->return->Student->EduStatus, $res->return->Student->EduCurSemStartDate, $res->return->Student->ContrNumber, $res->return->Student->ContrDate, $program, $ind
         );
         $result->add_student($stud);
         return $result;
@@ -970,15 +945,14 @@ class kompasFactory {
         }
         return $result;
     }
-	
-	private static function &parse_payment_info($response) {
-        $result = new kompasPaymentInfo($response->BankName, $response->BankCode, $response->Value, $response->HalfYearName,
-		$response->PaymentTypeName, $response->PaymentDate, $response->OperationType);
+
+    private static function &parse_payment_info($response) {
+        $result = new kompasPaymentInfo($response->BankName, $response->BankCode, $response->Value, $response->HalfYearName, $response->PaymentTypeName, $response->PaymentDate, $response->OperationType);
         return $result;
     }
-	
-	private static function &parse_payments($response) {
-		$result = new kompasPayments();
+
+    private static function &parse_payments($response) {
+        $result = new kompasPayments();
         if (is_array($response->Payments)) {
             foreach ($response->Payments as $value) {
                 $result->add_payment(self::parse_payment_info($value));
@@ -993,34 +967,30 @@ class kompasFactory {
         $arrayOfStrings = self::get_ArrayOfStrings($list);
         $param = array('ContractNumber' => $student->get_agreement_number(),
             'Subjects' => $arrayOfStrings);
-            $res = self::singleton()->SendSubjectOnChoiceList(
-                    $param);
+        $res = self::singleton()->SendSubjectOnChoiceList(
+                $param);
         return self::check_result($res, 220, "Ошибка при отправке перечня выбранных дисциплин в КИС.", $student->get_agreement_number());
     }
-	
-	public static function get_student_payments($student_id)
-	{
-		$res = self::singleton()->getPayments(array('ContractNumber' => $student_id));
-                self::check_result($res, 240, "Ошибка при чтении информации по выплатам студента из КИС.", $student->get_agreement_number());
-		return self::parse_payments($res->return);
-	}
-	
-	public static function read_dictionary($dictionary_name, $owner = null) {
+
+    public static function get_student_payments($student_id) {
+        $res = self::singleton()->getPayments(array('ContractNumber' => $student_id));
+        self::check_result($res, 240, "Ошибка при чтении информации по выплатам студента из КИС.", $student->get_agreement_number());
+        return self::parse_payments($res->return);
+    }
+
+    public static function read_dictionary($dictionary_name, $owner = null) {
         $res = self::singleton()->readDictionary(array('DictionaryName' => $dictionary_name,
             'language' => "ru-RU"));
-	self::check_result($res, 230, "Ошибка при чтении справочника из КИС.");
+        self::check_result($res, 230, "Ошибка при чтении справочника из КИС.");
 
-		$result = array();
-		if (is_array($res->return->DictionaryValues)) {
+        $result = array();
+        if (is_array($res->return->DictionaryValues)) {
             foreach ($res->return->DictionaryValues as $value) {
-				if (($owner == null) || ($value->owner==$owner))
-				{
-					$result[$value->key] = $value->value;
-				}
+                if (($owner == null) || ($value->owner == $owner)) {
+                    $result[$value->key] = $value->value;
+                }
             }
-        }
-		else
-		{
+        } else {
             $result[$res->return->DictionaryValues->key] = $res->return->DictionaryValues->value;
         }
         return $result;

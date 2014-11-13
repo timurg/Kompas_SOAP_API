@@ -95,7 +95,6 @@ class asaMatriculaRecord {
         return $this->fball;
     }
 
-    
     public function get_max_ball() {
         return $this->fmax_ball;
     }
@@ -103,7 +102,7 @@ class asaMatriculaRecord {
     public function get_rate() {
         return $this->frate;
     }
-    
+
     public function __construct($form_attestation, typeTesting &$type_testing, $subject, $semester, $date, $is_passed, $value, $text_value, $ball, $max_ball) {
         $this->fform_attestation = $form_attestation;
         $this->ftype_testing = $type_testing;
@@ -181,11 +180,11 @@ class asaFactory {
 
             //ini_set('soap.wsdl_cache_enabled', '0');
             ini_set('soap.wsdl_cache_ttl', '10');
-            self::$client = new SoapClient('http://asa.insto.ru:3989/Service1.svc?wsdl',['exceptions' => 0]);
+            self::$client = new SoapClient('http://asa.insto.ru:3989/Service1.svc?wsdl', ['exceptions' => 0]);
         }
         return self::$client;
     }
-    
+
     private static function check_result($result, $err_code = 0, $internal_message = "Ошибка при отправке запроса АСА", $agreement_number = NULL) {
         if (is_soap_fault($result)) {
             throw new veguException($internal_message, $err_code, $result, $agreement_number);
@@ -221,10 +220,7 @@ class asaFactory {
             default:
                 $tt = new typeTesting(-1);
         }
-        return new asaMatriculaRecord($response->FormAttestation, $tt, 
-                $response->Subject, $response->Semester, 
-                $rec_date, $is_pass, $response->Value, $text_val, 
-                $response->Ball, $response->MaxBall);
+        return new asaMatriculaRecord($response->FormAttestation, $tt, $response->Subject, $response->Semester, $rec_date, $is_pass, $response->Value, $text_val, $response->Ball, $response->MaxBall);
     }
 
     private static function &parse_matricula($response) {
@@ -241,7 +237,7 @@ class asaFactory {
         }
         return $matr;
     }
-    
+
     /**
      * Возвращает коллекцию записей зачётной книжки
      *
@@ -256,7 +252,7 @@ class asaFactory {
         self::check_result($res, 10, "Ошибка при получении данных по оценкам из АСА.", $agreement_number);
         return self::parse_matricula($res->GetMatriculaResult);
     }
-    
+
     /**
      * Возвращает рейтинг студента
      *
@@ -270,25 +266,23 @@ class asaFactory {
                 array('token' => '',
                     'AgreementNumber' => $agreement_number,
                     'SubjectName' => $subject_name));
-        self::check_result($res, 20, "Ошибка при получении рейтинга студента из АСА.", $agreement_number); 
-        return (float)$res->GetStudentSubjectRatingResult;
+        self::check_result($res, 20, "Ошибка при получении рейтинга студента из АСА.", $agreement_number);
+        return (float) $res->GetStudentSubjectRatingResult;
     }
-    
-    private function parse_students_rating_result($res, $agreement_numbers)
-    {
+
+    private function parse_students_rating_result($res, $agreement_numbers) {
         reset($agreement_numbers);
         $ret = array();
         if (is_array($res->double)) {
             foreach ($res->double as $value) {
-                $ret[current($agreement_numbers)] = (float)$value;
+                $ret[current($agreement_numbers)] = (float) $value;
                 next($agreement_numbers);
             }
         } else {
-            $ret[current($agreement_numbers)] = (float)$res->double;
+            $ret[current($agreement_numbers)] = (float) $res->double;
         }
         return $ret;
     }
-
 
     /**
      * Возвращает рейтинг студентов
@@ -301,11 +295,10 @@ class asaFactory {
     public static function get_students_rating($agreement_numbers, $subject_name) {
         $res = self::singleton()->GetStudentRating(
                 array('token' => '',
-                    'AgreementNumbers' => array('string'=>$agreement_numbers),
+                    'AgreementNumbers' => array('string' => $agreement_numbers),
                     'SubjectName' => $subject_name));
         self::check_result($res, 21, "Ошибка при получении данных по рейтингу студентов из АСА.");
-        return self::parse_students_rating_result($res->GetStudentRatingResult, 
-                $agreement_numbers);
+        return self::parse_students_rating_result($res->GetStudentRatingResult, $agreement_numbers);
     }
 
 }

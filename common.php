@@ -1,5 +1,7 @@
 ﻿<?php
+
 class kompasArray implements Iterator {
+
     private $container;
 
     public function __construct() {
@@ -106,5 +108,4 @@ class veguException extends Exception {
     }
 
 }
-
 ?>
