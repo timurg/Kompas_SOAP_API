@@ -181,9 +181,16 @@ class asaFactory {
 
             //ini_set('soap.wsdl_cache_enabled', '0');
             ini_set('soap.wsdl_cache_ttl', '10');
-            self::$client = new SoapClient('http://asa.insto.ru:3989/Service1.svc?wsdl');
+            self::$client = new SoapClient('http://asa.insto.ru:3989/Service1.svc?wsdl',['exceptions' => 0]);
         }
         return self::$client;
+    }
+    
+    private static function check_result($result, $err_code = 0, $internal_message = "Ошибка при отправке запроса АСА", $agreement_number = NULL) {
+        if (is_soap_fault($result)) {
+            throw new veguException($internal_message, $err_code, $result, $agreement_number);
+        }
+        return true;
     }
 
     private static function &parse_matricula_record($response) {
@@ -246,6 +253,7 @@ class asaFactory {
         $res = self::singleton()->GetMatricula(
                 array('token' => 'A3E9268D-1360-4ABC-8A1C-DD2D3F7806A4',
                     'AgreementNumber' => $agreement_number));
+        self::check_result($res, 10, "Ошибка при получении данных по оценкам из АСА.", $agreement_number);
         return self::parse_matricula($res->GetMatriculaResult);
     }
     
@@ -262,6 +270,7 @@ class asaFactory {
                 array('token' => '',
                     'AgreementNumber' => $agreement_number,
                     'SubjectName' => $subject_name));
+        self::check_result($res, 20, "Ошибка при получении рейтинга студента из АСА.", $agreement_number); 
         return (float)$res->GetStudentSubjectRatingResult;
     }
     
@@ -294,6 +303,7 @@ class asaFactory {
                 array('token' => '',
                     'AgreementNumbers' => array('string'=>$agreement_numbers),
                     'SubjectName' => $subject_name));
+        self::check_result($res, 21, "Ошибка при получении данных по рейтингу студентов из АСА.");
         return self::parse_students_rating_result($res->GetStudentRatingResult, 
                 $agreement_numbers);
     }
