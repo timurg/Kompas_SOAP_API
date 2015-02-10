@@ -4,7 +4,8 @@ class kompasArray implements Iterator {
 
     private $container;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->container = array();
     }
 
@@ -61,11 +62,13 @@ class typeTesting {
 
     private $ID;
 
-    public function __construct($aID) {
+    public function __construct($aID)
+    {
         $this->ID = $aID;
     }
 
-    public function get_id() {
+    public function get_id()
+    {
         return $this->ID;
     }
 
