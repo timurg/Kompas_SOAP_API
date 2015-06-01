@@ -973,7 +973,7 @@ class kompasFactory {
     }
 
     public static function get_student_payments($student_id) {
-        $res = self::singleton()->getPayments(array('ContractNumber' => $student_id));
+        $res = self::singleton()->getPayments(array('AgreementNumber' => $student_id));
         self::check_result($res, 240, "Ошибка при чтении информации по выплатам студента из КИС.", $student->get_agreement_number());
         return self::parse_payments($res->return);
     }

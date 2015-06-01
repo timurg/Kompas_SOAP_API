@@ -3,9 +3,11 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.ph
 
 if (!isset($_GET["bx_user"])) die("NULL");
 if (!isset($_GET["message"])) die("NULL");
+if (!isset($_GET["mailmessage"])) die("NULL");
+
 $UserIDString = $_GET["bx_user"];
 $Message = $_GET["message"];
-
+$MailMessage = $_GET["mailmessage"];
 $users = explode(";", $UserIDString);
 
 //TODO: добавить проверку дилны строки
@@ -18,7 +20,7 @@ if (CModule::IncludeModule("im"))
 		// получатель
 		"TO_USER_ID" => $user_id,
 		// отправитель
-		"FROM_USER_ID" => 482, 
+		"FROM_USER_ID" => 118292, 
 		// тип уведомления
 		"NOTIFY_TYPE" => IM_NOTIFY_FROM, 
 		// модуль запросивший отправку уведомления
@@ -28,7 +30,7 @@ if (CModule::IncludeModule("im"))
 		// текст уведомления на сайте
 		"NOTIFY_MESSAGE" => $Message, 
 		// текст уведомления для отправки на почту (или XMPP), если различий нет - не задаем параметр
-		"NOTIFY_MESSAGE_OUT" => $Message
+		"NOTIFY_MESSAGE_OUT" => $MailMessage
 		);
 		CIMNotify::Add($arMessageFields);
 	}
