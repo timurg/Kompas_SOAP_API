@@ -809,7 +809,7 @@ class kompasFactory {
                     break;
             }
         }
-        if (isset($response->Controlwork)) {
+        if (isset($response->ControlWork)) {
             $res->get_types_testing()->add_type_testing(new typeTesting(typeTesting::ControlWork));
         }
         if (isset($response->Coursework)) {
