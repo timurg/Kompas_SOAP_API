@@ -475,13 +475,18 @@ class kompasCreateEntrantProfileResult{
     private $message; //Сообщение от КИС Компас-В
     private $isNewPerson; //Создано ли новое физ лицо?
     private $profileID; //Идентификатор анкеты (будущий номер договра)
+    private $user_name; //логин абитуриента
+    private $pass_word; //пароль абитуриента
     
-    public function __construct($fsuccess, $fpersonID, $fmessage, $fisNewPerson, $fprofileID){
+    public function __construct($fsuccess, $fpersonID, $fmessage, $fisNewPerson, 
+            $fprofileID, $user_name, $pass_word){
         $this->success = $fsuccess;
         $this->personID = $fpersonID;
         $this->message = $fmessage;
         $this->isNewPerson = $fisNewPerson;
         $this->profileID = $fprofileID;
+        $this->user_name = $user_name;
+        $this->pass_word = $pass_word;
     }
     /**
      * Возвращает информацию об успешности операции по созданию анкеты абитуриента.
@@ -528,6 +533,26 @@ class kompasCreateEntrantProfileResult{
      */
     public function get_person_id(){
         return $this->personID;
+    }
+    
+    /**
+     * Возвращает логин абитуриента
+     *
+     * @author Timur
+     * @return string
+     */
+    public function get_user_name(){
+        return $this->user_name;
+    }
+    
+    /**
+     * Возвращает пароль абитуринта
+     *
+     * @author Timur
+     * @return string
+     */
+    public function get_pass_word(){
+        return $this->pass_word;
     }
 }
 
@@ -1058,7 +1083,7 @@ class kompasFactory {
         return $result;
     }
     /**
-     * Создание анкеты абитуриента.
+     * Парсинг результата вызова функции по создание анкеты абитуриента.
      *
      * @author Timur
      * @return kompasCreateEntrantProfileResult
@@ -1069,7 +1094,10 @@ class kompasFactory {
                         $response->personID,
                         $response->message,
                         $response->isNewPerson,
-                        $response->profileID);
+                        $response->profileID,
+                        $response->userName,
+                        $response->password
+                );
     }
 
     /**
