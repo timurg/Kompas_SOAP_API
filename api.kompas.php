@@ -469,6 +469,68 @@ class kompasProgramOfStudy {
 
 }
 
+class kompasCreateEntrantProfileResult{
+    private $success; //Булево поле, информация об успшности операции
+    private $personID; //Идентификатор физ. лица.
+    private $message; //Сообщение от КИС Компас-В
+    private $isNewPerson; //Создано ли новое физ лицо?
+    private $profileID; //Идентификатор анкеты (будущий номер договра)
+    
+    public function __construct($fsuccess, $fpersonID, $fmessage, $fisNewPerson, $fprofileID){
+        $this->success = $fsuccess;
+        $this->personID = $fpersonID;
+        $this->message = $fmessage;
+        $this->isNewPerson = $fisNewPerson;
+        $this->profileID = $fprofileID;
+    }
+    /**
+     * Возвращает информацию об успешности операции по созданию анкеты абитуриента.
+     *
+     * @author Timur
+     * @return bool
+     */
+    public function is_success(){
+        return $this->success;
+    }
+    
+    /**
+     * Возвращает идентификатор созданной анкеты. При заключении договора, идентификатор анкеты становится номером договора.
+     *
+     * @author Timur
+     * @return string
+     */
+    public function get_profile_id(){
+        return $this->profileID;
+    }
+    /**
+     * Возвращает сообщение по последней операции по созданию анкеты абитурианта в КИС Компас-В.
+     *
+     * @author Timur
+     * @return string
+     */
+    public function get_message(){
+        return $this->message;
+    }
+    /**
+     * Возвращает флаг - было ли создано физ. лицо при выполнении операции.
+     *
+     * @author Timur
+     * @return bool
+     */
+    public function is_new_person(){
+        return $this->isNewPerson;
+    }
+    /**
+     * Возвращает идентификатор физ. лица.
+     *
+     * @author Timur
+     * @return string
+     */
+    public function get_person_id(){
+        return $this->personID;
+    }
+}
+
 class kompasStudent {
 
     private $EduBasicLang; //Основной изучаемый язык
@@ -994,6 +1056,74 @@ class kompasFactory {
             $result[$res->return->DictionaryValues->key] = $res->return->DictionaryValues->value;
         }
         return $result;
+    }
+    /**
+     * Создание анкеты абитуриента.
+     *
+     * @author Timur
+     * @return kompasCreateEntrantProfileResult
+     */
+    private static function &parse_create_entrant_profile_result($response) {
+        return new kompasCreateEntrantProfileResult(
+                        $response->success,
+                        $response->personID,
+                        $response->message,
+                        $response->isNewPerson,
+                        $response->profileID);
+    }
+
+    /**
+     * Создание анкеты абитуриента.
+     *
+     * @author Timur
+     * @param string $Name Имя
+     * @param string $LastName Фамилия
+     * @param string $Patronymic Отчество
+     * @param DateTime $Birthday Дата рождения
+     * @param string $Email e-mail
+     * @param string $PhoneNumber Телефонный номер
+     * @param string $City Город проживания
+     * @param string $Country Страна проживания
+     * @param string $idCode Код паспорта
+     * @param string $idNumber Номер паспорта
+     * @param string $idSupervisor Название организации выдавшей паспорт
+     * @param DateTime $idDate Дата получения паспорта
+     * @param string $BaseEducationRate Уровень образования
+     * @param string $EducationOrganizationName Название учебного заведения
+     * @param integer $YearOfEnrolling Год начала обучения
+     * @param integer $YearOfGraduating Год окончания обучения
+     * @param string $SelectedEducationLevel Выбранный уровень образованния
+     * @param string $SelectedDirection Направление (специальность)
+     * @return kompasCreateEntrantProfileResult
+     */
+    public static function create_entrant_profile($Name, $LastName, $Patronymic,
+            $Birthday, $Email, $Sex, $PhoneNumber, $City, $Country, 
+            $idCode, $idNumber, $idSupervisor, $idDate,
+            $BaseEducationRate, $EducationOrganizationName,
+            $YearOfEnrolling, $YearOfGraduating, $SelectedEducationLevel,
+            $SelectedDirection) {
+        $res = self::singleton()->createEntrantProfile(array(
+            'Name' => $Name,
+            'LastName' => $LastName,
+            'Patronymic' => $Patronymic,
+            'Birthday' => $Birthday->format('Y-m-d'),
+            'Email' => $Email,
+            'PhoneNumber' => $PhoneNumber,
+            'City' => $City,
+            'Country' => $Country,
+            'idCode' => $idCode,
+            'idNumber' => $idNumber,
+            'idSupervisor' => $idSupervisor,
+            'idDate' => $idDate->format('Y-m-d'),
+            'BaseEducationRate' => $BaseEducationRate,
+            'EducationOrganizationName' => $EducationOrganizationName,
+            'YearOfEnrolling' => $YearOfEnrolling,
+            'YearOfGraduating' => $YearOfGraduating,
+            'SelectedEducationLevel' => $SelectedEducationLevel,
+            'SelectedDirection' => $SelectedDirection
+            ));
+        self::check_result($res, 200, "Ошибка при создании анкеты.");
+        return self::parse_create_entrant_profile_result($res->return);
     }
 
 }
