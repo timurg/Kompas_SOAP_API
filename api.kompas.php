@@ -1125,7 +1125,15 @@ class kompasFactory {
         self::check_result($res, 200, "Ошибка при создании анкеты.");
         return self::parse_create_entrant_profile_result($res->return);
     }
-
+    
+    public static function change_student_password($profile_id, $new_pass) {
+        $res = self::singleton()->changePasswordForStudent(array(
+            'ProfileNumer' => $profile_id,
+            'NewPass' => $new_pass
+                ));
+        self::check_result($res, 240, "Ошибка при смене пароля.", $profile_id);
+        return $res->return;
+    }
 }
 
 ?>
