@@ -1119,7 +1119,7 @@ class kompasFactory {
      * @param string $BaseEducationRate Уровень образования
      * @param string $EducationOrganizationName Название учебного заведения
 	 * @param string $EducationDocOrganizationPlace Место размещения образовательного учереждения
-	 * @param string $EducationDocType Тип документа об образовании
+	 * @param string $EducationDocType Тип документа об образовании, возможные значения: диплом, аттестат.
 	 * @param string $EducationDocNumber Номер документа об образование
 	 * @param DateTime $EducationDocDate Дата выдачи документа
 	 * @param string $EducationDocSeria Серия документа об образовании
