@@ -1118,8 +1118,14 @@ class kompasFactory {
      * @param DateTime $idDate Дата получения паспорта
      * @param string $BaseEducationRate Уровень образования
      * @param string $EducationOrganizationName Название учебного заведения
-     * @param integer $YearOfEnrolling Год начала обучения
-     * @param integer $YearOfGraduating Год окончания обучения
+	 * @param string $EducationDocOrganizationPlace Место размещения образовательного учереждения
+	 * @param string $EducationDocType Тип документа об образовании
+	 * @param string $EducationDocNumber Номер документа об образование
+	 * @param DateTime $EducationDocDate Дата выдачи документа
+	 * @param string $EducationDocSeria Серия документа об образовании
+	 * @param string $EducationDocRegNumber Регистрационный номер документа об образовании
+     * @param integer $EducationDocYearOfEnrolling Год начала обучения
+     * @param integer $EducationDocYearOfGraduating Год окончания обучения
      * @param string $SelectedEducationLevel Выбранный уровень образованния
      * @param string $SelectedDirection Направление (специальность)
      * @return kompasCreateEntrantProfileResult
@@ -1127,7 +1133,9 @@ class kompasFactory {
     public static function create_entrant_profile($Name, $LastName, $Patronymic,
             $Birthday, $Email, $Sex, $PhoneNumber, $City, $Country, 
             $idCode, $idNumber, $idSupervisor, $idDate,
-            $BaseEducationRate, $EducationOrganizationName,
+            $BaseEducationRate, $EducationOrganizationName, $EducationDocOrganizationPlace,
+			$EducationDocType, $EducationDocNumber, $EducationDocDate,
+			$EducationDocSeria, $EducationDocRegNumber
             $YearOfEnrolling, $YearOfGraduating, $SelectedEducationLevel,
             $SelectedDirection) {
         $res = self::singleton()->createEntrantProfile(array(
@@ -1145,10 +1153,16 @@ class kompasFactory {
             'idDate' => $idDate->format('Y-m-d'),
             'BaseEducationRate' => $BaseEducationRate,
             'EducationOrganizationName' => $EducationOrganizationName,
-            'YearOfEnrolling' => $YearOfEnrolling,
-            'YearOfGraduating' => $YearOfGraduating,
+            'EducationDocYearOfEnrolling' => $YearOfEnrolling,
+            'EducationDocYearOfGraduating' => $YearOfGraduating,
             'SelectedEducationLevel' => $SelectedEducationLevel,
-            'SelectedDirection' => $SelectedDirection
+            'EducationDocOrganizationPlace' => $EducationDocOrganizationPlace,
+			'EducationDocType' => $EducationDocType,
+			'EducationDocNumber' => $EducationDocNumber,
+			'EducationDocDate' => $EducationDocDate->format('Y-m-d'),
+			'EducationDocSeria' => $EducationDocSeria,
+			'EducationDocRegNumber' => $EducationDocRegNumber,
+			'SelectedDirection' => $SelectedDirection
             ));
         self::check_result($res, 200, "Ошибка при создании анкеты.");
         return self::parse_create_entrant_profile_result($res->return);
