@@ -1135,7 +1135,7 @@ class kompasFactory {
             $idCode, $idNumber, $idSupervisor, $idDate,
             $BaseEducationRate, $EducationOrganizationName, $EducationDocOrganizationPlace,
 			$EducationDocType, $EducationDocNumber, $EducationDocDate,
-			$EducationDocSeria, $EducationDocRegNumber
+			$EducationDocSeria, $EducationDocRegNumber,
             $YearOfEnrolling, $YearOfGraduating, $SelectedEducationLevel,
             $SelectedDirection) {
         $res = self::singleton()->createEntrantProfile(array(
@@ -1152,7 +1152,7 @@ class kompasFactory {
             'idSupervisor' => $idSupervisor,
             'idDate' => $idDate->format('Y-m-d'),
             'BaseEducationRate' => $BaseEducationRate,
-            'EducationOrganizationName' => $EducationOrganizationName,
+            'EducationDocOrganizationName' => $EducationOrganizationName,
             'EducationDocYearOfEnrolling' => $YearOfEnrolling,
             'EducationDocYearOfGraduating' => $YearOfGraduating,
             'SelectedEducationLevel' => $SelectedEducationLevel,
