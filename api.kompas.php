@@ -807,8 +807,12 @@ class kompasIndividualSubjects extends kompasArray {
     private $Sended; //была ли отправлена заявка
     private $WhenAppro; //дата утверждения либо пустая строка
     private $Student; //студент
+	private $OrderNumber; //Номер приказа об утверждении
+	private $OrderDate; //Дата приказа об утверждении
+	private $ResearchWorkTheme; //Тема ВКР
+	private $ScientificAdviser; //Руководитель
 
-    public function __construct($fSended, $fWhenAppro) {
+    public function __construct($fSended, $fWhenAppro, $fOrderNumber, $fOrderDate, $fResearchWorkTheme, $fScientificAdviser) {
         parent::__construct();
         $this->Sended = $fSended;
         if ($fWhenAppro <> "") {
@@ -816,6 +820,11 @@ class kompasIndividualSubjects extends kompasArray {
         }
         $this->WhenAppro = $fWhenAppro;
         $this->Student = null;
+		
+		$this->OrderNumber = $fOrderNumber;
+		$this->OrderDate = $fOrderDate;
+		$this->ResearchWorkTheme = $fResearchWorkTheme;
+		$this->ScientificAdviser = $fScientificAdviser;
     }
 
     public function is_sended() {
@@ -824,6 +833,22 @@ class kompasIndividualSubjects extends kompasArray {
 
     public function when() {
         return $this->WhenAppro;
+    }
+	
+	public function get_order_number() {
+        return $this->OrderNumber;
+    }
+	
+	public function get_order_date() {
+        return $this->OrderDate;
+    }
+	
+	public function get_research_work_theme() {
+        return $this->ResearchWorkTheme;
+    }
+	
+	public function get_scientific_adviser() {
+        return $this->ScientificAdviser;
     }
 
     public function is_appro() {
@@ -1022,7 +1047,7 @@ class kompasFactory {
     }
 
     private static function &parse_subject_on_choice($response) {
-        $result = new kompasIndividualSubjects($response->Sended, $response->WhenAppro);
+        $result = new kompasIndividualSubjects($response->Sended, $response->WhenAppro, $response->OrderNumber, $response->OrderDate, $response->ResearchWorkTheme, $response->ScientificAdviser);
         if (is_array($response->Subject)) {
             foreach ($response->Subject as $value) {
                 $result->add_subject($value);
