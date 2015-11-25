@@ -811,8 +811,12 @@ class kompasIndividualSubjects extends kompasArray {
 	private $OrderDate; //Дата приказа об утверждении
 	private $ResearchWorkTheme; //Тема ВКР
 	private $ScientificAdviser; //Руководитель
+    private $Curator; //Куратор студента
+    private $AssistantOfScientificAdviser; //Консультант студента
+    private $IsApproved; //Флаг - проверен ли ИУП.
 
-    public function __construct($fSended, $fWhenAppro, $fOrderNumber, $fOrderDate, $fResearchWorkTheme, $fScientificAdviser) {
+    public function __construct($fSended, $fWhenAppro, $fOrderNumber, $fOrderDate, $fResearchWorkTheme, $fScientificAdviser, $fCurator,
+                $fAssistantOfScientificAdviser, $fIsApproved) {
         parent::__construct();
         $this->Sended = $fSended;
         if ($fWhenAppro <> "") {
@@ -825,6 +829,9 @@ class kompasIndividualSubjects extends kompasArray {
 		$this->OrderDate = $fOrderDate;
 		$this->ResearchWorkTheme = $fResearchWorkTheme;
 		$this->ScientificAdviser = $fScientificAdviser;
+        $this->Curator = $fCurator;
+        $this->AssistantOfScientificAdviser = $fAssistantOfScientificAdviser;
+        $this->IsApproved = $fIsApproved;        
     }
 
     public function is_sended() {
@@ -853,6 +860,18 @@ class kompasIndividualSubjects extends kompasArray {
 
     public function is_appro() {
         return $this->WhenAppro <> "";
+    }
+    
+    public function get_curator() {
+        return $this->Curator;
+    }
+    
+    public function get_assistant_scientific_adviser() {
+        return $this->AssistantOfScientificAdviser;
+    }
+    
+    public function is_approved() {
+        return $this->IsApproved;
     }
 
     public function add_subject($sub_name) {
@@ -1047,7 +1066,9 @@ class kompasFactory {
     }
 
     private static function &parse_subject_on_choice($response) {
-        $result = new kompasIndividualSubjects($response->Sended, $response->WhenAppro, $response->OrderNumber, new DateTime($response->OrderDate) , $response->ResearchWorkTheme, $response->ScientificAdviser);
+        $result = new kompasIndividualSubjects($response->Sended, $response->WhenAppro, $response->OrderNumber, new DateTime($response->OrderDate) ,
+                $response->ResearchWorkTheme, $response->ScientificAdviser, $response->Curator, $response->AssistantOfScientificAdviser,
+                $response->IsApproved);
         if (is_array($response->Subject)) {
             foreach ($response->Subject as $value) {
                 $result->add_subject($value);
