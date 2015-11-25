@@ -77,7 +77,7 @@ $SD = $SETTINGS['SUPERVISING_DEPARTMENTS'][$SD_code];
     <div style="float:right; text-align: right; width: 100%;margin-bottom: 30px;">
         <p>Утвержден приказом</p>
         <p>ректора Академии ВЭГУ</p>
-        <p>от <?=$student->get_individual_subjects()->get_order_date();?> № <?=$student->get_individual_subjects()->get_order_number();?></p>
+        <p>от <?=$student->get_individual_subjects()->get_order_date()->format("d.m.Y");?> № <?=$student->get_individual_subjects()->get_order_number();?></p>
     </div>
 
     <div style="text-align: center; width: 100%;">
@@ -112,9 +112,11 @@ $SD = $SETTINGS['SUPERVISING_DEPARTMENTS'][$SD_code];
         
          ?>
      </table>
+	 <br/>
+	 <br/>
 	<table border="0" cellpadding="0" cellspacing="0" class="packages" width="100%">
 		<tr>
-			<td width="33%">Директор Института магистратуры и аспирантуры</td>
+			<td width="33%">Директор Института<br/> магистратуры и аспирантуры</td>
 			<td width="33%"><img src="/extranet/services/curriculum/sign/ima.png"/></td>
 			<td width="33%">К.Н. Исмагилов</td>
 		</tr>
