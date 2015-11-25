@@ -1047,7 +1047,7 @@ class kompasFactory {
     }
 
     private static function &parse_subject_on_choice($response) {
-        $result = new kompasIndividualSubjects($response->Sended, $response->WhenAppro, $response->OrderNumber, $response->OrderDate, $response->ResearchWorkTheme, $response->ScientificAdviser);
+        $result = new kompasIndividualSubjects($response->Sended, $response->WhenAppro, $response->OrderNumber, new DateTime($response->OrderDate) , $response->ResearchWorkTheme, $response->ScientificAdviser);
         if (is_array($response->Subject)) {
             foreach ($response->Subject as $value) {
                 $result->add_subject($value);
