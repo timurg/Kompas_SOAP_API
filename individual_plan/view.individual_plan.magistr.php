@@ -94,7 +94,7 @@ $SD = $SETTINGS['SUPERVISING_DEPARTMENTS'][$SD_code];
     <div style="width: 100%;">
         <!--<p>Дата заключения договора: <span id="std_contract_date"><?=$student->get_agreement_date()?></span></p>-->
         <p><strong>Магистрант:</strong> <?=$person->get_last_name()?> <?=$person->get_first_name()?> <?=$person->get_patronymic()?></p>
-        <p><strong>Дата начала обучения:</strong> <?=$student->get_agreement_date()?></span></p>
+        <p><strong>Дата начала обучения:</strong> <?=$student->get_date_of_commencement()->format("d.m.Y") ?></span></p>
         <p><strong>Тема магистерской диссертации:</strong> <?=$student->get_individual_subjects()->get_research_work_theme() ?></p>
         <p><strong>Научный руководитель:</strong> <?=$student->get_individual_subjects()->get_scientific_adviser(); ?><? if ($student->get_individual_subjects()->get_assistant_scientific_adviser() != "")
         { print " (консультант ".$student->get_individual_subjects()->get_assistant_scientific_adviser().")"; }; ?></p>
