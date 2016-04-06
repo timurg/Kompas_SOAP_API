@@ -563,13 +563,16 @@ class kompasStudent {
     private $EduSemester; //Семестр
     private $EduStatus; //Статус студента
     private $EduCurSemStartDate; //Дата начала обучения по текущему семестру
+	private $EduDateOfCommencement; //Дата начала первого семестра
     private $ContrNumber; //Номер договора / номер зачётной книжки
     private $ContrDate; //Дата заключения договора
     private $Program; //kompasProgramOfStudy
     private $IndividualSubjects; //kompasIndividualSubjects
     private $Payments; //kompasPayments
 
-    public function __construct($fEduBasicLang, $fEduGroup, $fEduSemester, $fEduStatus, $fEduCurSemStartDate, $fContrNumber, $fContrDate, &$fProgram, kompasIndividualSubjects &$fIndividualSubjects) {
+    public function __construct($fEduBasicLang, $fEduGroup, $fEduSemester, 
+		$fEduStatus, $fEduCurSemStartDate, $fContrNumber, $fContrDate,
+		&$fProgram, $fEduDateOfCommencement, kompasIndividualSubjects &$fIndividualSubjects) {
         $this->EduBasicLang = $fEduBasicLang;
         $this->EduGroup = $fEduGroup;
         $this->EduSemester = $fEduSemester;
@@ -578,7 +581,9 @@ class kompasStudent {
         $this->ContrNumber = $fContrNumber;
         $this->ContrDate = $fContrDate;
         $this->Program = $fProgram;
+		$this->EduDateOfCommencement = $fEduDateOfCommencement;
         $this->IndividualSubjects = $fIndividualSubjects;
+		
         $fIndividualSubjects->set_student($this);
         if ($fIndividualSubjects->is_appro()) {
             $this->apply_individual_subjects();
@@ -613,6 +618,16 @@ class kompasStudent {
     public function get_agreement_date() {
         $dt = explode(" ", $this->ContrDate);
         return $dt[0];
+    }
+	
+	/**
+     * Возвращает дату начала первого семестра обучения студента.
+     *
+     * @author Timur
+     * @return Date
+     */
+	public function get_date_of_commencement() {
+        return $this->EduDateOfCommencement;
     }
 
     /**
@@ -1051,7 +1066,7 @@ class kompasFactory {
         $ind = self::parse_subject_on_choice($res->return->SubjecsOnChoice);
 
         $stud = new kompasStudent(
-                $res->return->Student->EduBasicLang, $res->return->Student->EduGroup, $res->return->Student->EduSemester, $res->return->Student->EduStatus, $res->return->Student->EduCurSemStartDate, $res->return->Student->ContrNumber, $res->return->Student->ContrDate, $program, $ind
+                $res->return->Student->EduBasicLang, $res->return->Student->EduGroup, $res->return->Student->EduSemester, $res->return->Student->EduStatus, $res->return->Student->EduCurSemStartDate, $res->return->Student->ContrNumber, $res->return->Student->ContrDate, $program, $res->return->Student->EduDateOfCommencement, $ind
         );
         $result->add_student($stud);
         return $result;

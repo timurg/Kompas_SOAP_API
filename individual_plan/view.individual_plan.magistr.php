@@ -96,7 +96,9 @@ $SD = $SETTINGS['SUPERVISING_DEPARTMENTS'][$SD_code];
         <p><strong>Магистрант:</strong> <?=$person->get_last_name()?> <?=$person->get_first_name()?> <?=$person->get_patronymic()?></p>
         <p><strong>Дата начала обучения:</strong> <?=$student->get_agreement_date()?></span></p>
         <p><strong>Тема магистерской диссертации:</strong> <?=$student->get_individual_subjects()->get_research_work_theme() ?></p>
-        <p><strong>Научный руководитель:</strong> <?=$student->get_individual_subjects()->get_scientific_adviser() ?></p>
+        <p><strong>Научный руководитель:</strong> <?=$student->get_individual_subjects()->get_scientific_adviser(); ?><? if ($student->get_individual_subjects()->get_assistant_scientific_adviser() != "")
+        { print " (консультант ".$student->get_individual_subjects()->get_assistant_scientific_adviser().")"; }; ?></p>
+        <p><strong>Руководитель курса магистрантов: </strong> <?=$student->get_individual_subjects()->get_curator() ?></p>
     </div>    
     
     <table class="plan" s cellpadding="0" cellspacing="0" class="packages">
