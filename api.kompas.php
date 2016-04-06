@@ -624,7 +624,7 @@ class kompasStudent {
      * Возвращает дату начала первого семестра обучения студента.
      *
      * @author Timur
-     * @return Date
+     * @return DateTime
      */
 	public function get_date_of_commencement() {
         return $this->EduDateOfCommencement;
@@ -1064,9 +1064,10 @@ class kompasFactory {
                 $res->return->Student->ContrOrganization, $res->return->Student->EduDepartment, $res->return->Student->EduLevel, $res->return->Student->EduForm, $res->return->Student->EduSpecialty, $res->return->Student->EduSpecialtyCode, $res->return->Student->EduSpecialization, $res->return->Student->EduQualification, $res->return->Student->EduBasicEdu, $res->return->Student->EduProgram, $res->return->Student->EduDuration, $SupervisingDepartmentCode, $SupervisingDepartmentName, $res->return->Student->EduDirectionAbbreviation, $res->return->Student->EduSpecialtyAbbreviation, $curr
         );
         $ind = self::parse_subject_on_choice($res->return->SubjecsOnChoice);
-
+		
+		$dateOfCommencement = isset($res->return->Student->EduDateOfCommencement) ? new DateTime($res->return->Student->EduDateOfCommencement) :  new DateTime();
         $stud = new kompasStudent(
-                $res->return->Student->EduBasicLang, $res->return->Student->EduGroup, $res->return->Student->EduSemester, $res->return->Student->EduStatus, $res->return->Student->EduCurSemStartDate, $res->return->Student->ContrNumber, $res->return->Student->ContrDate, $program, $res->return->Student->EduDateOfCommencement, $ind
+                $res->return->Student->EduBasicLang, $res->return->Student->EduGroup, $res->return->Student->EduSemester, $res->return->Student->EduStatus, $res->return->Student->EduCurSemStartDate, $res->return->Student->ContrNumber, $res->return->Student->ContrDate, $program, $dateOfCommencement, $ind
         );
         $result->add_student($stud);
         return $result;
